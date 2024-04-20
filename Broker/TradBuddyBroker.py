@@ -1,0 +1,1 @@
+# Create Own Broker for paper trading as well as Store Trad Historys 
