@@ -21,5 +21,12 @@ Manager handle Hist data and Genarate json file and fetch evry 1 mintes live str
 ```
 
 
+# **Day 3**
 
+## **Task 1**
+- [1] **Create Trader folder and create AutoTrader.py file**
+- [2] **In AutoTrader file we build Worker which buy and sell trad aAcroding Status**
+
+```py
+```
 
