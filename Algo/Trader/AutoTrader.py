@@ -19,7 +19,7 @@ def Time_set_for_next_day(market_status):
 Strategy_path = f"{os.getcwd()}/Records/strategies_results.json"
 
 def Worker():
-    with open(strategy_path, 'r') as file:
+    with open(Strategy_path, 'r') as file:
         strategies_results = json.load(file)
 
 

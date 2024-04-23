@@ -9,13 +9,15 @@ import os
 from Algo.Strategys.BaseStategys import strategy_1, strategy_2
 from Broker.FyersBroker import Fyers
 
+logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 fyers_obj = Fyers()
 fyers_obj.authentication()
 
-def Time_set_for_next_day(market_status):
+def Time_set_for_next_day():
     schedule.clear()
     schedule.every().day.at("09:15").do(start_algo)
-    print(f"Market Status is : {market_status}")
+    logging.info("Algorithm scheduled for the next day")
 
 
 def store_strategy_statuses():   
@@ -25,7 +27,6 @@ def store_strategy_statuses():
     results = {}
 
     def find_entries(index_data):
-        print("Find Entry For :", index_data)
         try:
             data = fyers_obj.Historical_Data(index_data[0], TimeFrame)
             strategy_1_status = strategy_1(data, index_data[1])
@@ -36,7 +37,9 @@ def store_strategy_statuses():
                 "updated_datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
         except Exception as e:
-            print("Error occurred while processing: %s", e)
+            error_msg = f"Error occurred while processing {index_data[0]}: {e}"
+            print(error_msg)
+            logging.error(error_msg)
             return None
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -46,14 +49,16 @@ def store_strategy_statuses():
 
     with open(f"{os.getcwd()}/Records/strategies_results.json", "w") as f:
         json.dump(results, f)
+    logging.info("Status Update successful")
 
 def start_algo():
     current_time = datetime.now().time()
     market_status = fyers_obj.MarketStatus()
     if datetime.strptime("9:15", "%H:%M").time() <= current_time <= datetime.strptime("15:15", "%H:%M").time() and market_status == "OPEN":
-        print("Algorithm is Online")
+        logging.info("Algorithm is Online")
         schedule.every(1).minutes.do(lambda: Time_set_for_next_day() if current_time > datetime.strptime("15:15", "%H:%M").time() else store_strategy_statuses())
     else:
+        logging.info("Algorithm is Offline")
         Time_set_for_next_day(market_status)
 
 
