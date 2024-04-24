@@ -1,5 +1,6 @@
 import time
 
-def PlaceOrder(side):
+def PlaceOrder(account_id, strategy_name, symbol, status):
     time.sleep(3)
-    print(f"Placing {side} order...")
+    print("--------------")
+    print(account_id, strategy_name, symbol, status)
