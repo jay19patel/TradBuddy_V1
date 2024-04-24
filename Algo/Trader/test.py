@@ -28,18 +28,22 @@ Account_list = {
 def worker(account_id, strategy_name, symbol, status):
     PlaceOrder(account_id, strategy_name, symbol, status)
 
+def coin_current_check(executor, Account_list, strategies_results):
+    futures = []
+    for account_id, strategies in Account_list.items():
+        for strategy_name, symbols in strategies.items():
+            for symbol in symbols:
+                if symbol in strategies_results:
+                    result = strategies_results[symbol]
+                    status = result[f'{strategy_name.lower()}_status']
+                    futures.append(executor.submit(worker, account_id, strategy_name, symbol, status))
+    for future in concurrent.futures.as_completed(futures):
+        future.result()
+
 def main():
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for account_id, strategies in Account_list.items():
-            for strategy_name, symbols in strategies.items():
-                for symbol in symbols:
-                    if symbol in strategies_results:
-                        result = strategies_results[symbol]
-                        status = result[f'{strategy_name.lower()}_status']
-                        futures.append(executor.submit(worker, account_id, strategy_name, symbol, status))
-        for future in concurrent.futures.as_completed(futures):
-            future.result()
+        coin_current_check(executor, Account_list, strategies_results)
+
 
 if __name__ == "__main__":
     main()
