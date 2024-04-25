@@ -21,18 +21,27 @@ Account_list = [
             ]
     }
 ]
+import asyncio
 
-def StrategyCode(args):
+async def StrategyCode(args):
     name, strategy = args
-    print("Account Name :",name)
+    # print("Account Name :", name)
     for i in strategy:
-      (symbol, strategy) = next(iter(i.items()))
-      print(strategies_results[symbol][strategy])
-      print(symbol,strategy)
+        (symbol, strategy) = next(iter(i.items()))
+        # print(strategies_results[symbol][strategy])
+        # await asyncio.sleep(3)  # Replace this with your actual processing
+        # print(symbol, strategy)
 
-def process_item(n):
-    with concurrent.futures.ThreadPoolExecutor() as executor1:
-        executor1.map(StrategyCode, [(n['name'], n['strategy'])])
+async def process_item(n):
+    await StrategyCode((n['name'], n['strategy']))
 
-with concurrent.futures.ThreadPoolExecutor() as executor:
-    executor.map(process_item, Account_list)
+start_time = time.time()
+
+# Run all tasks concurrently
+# Adjust the number of tasks based on your system's capabilities
+tasks = [process_item(account) for account in Account_list]
+await asyncio.gather(*tasks)
+
+end_time = time.time()
+execution_time = end_time - start_time
+print(f"Execution Time: {execution_time} seconds")
