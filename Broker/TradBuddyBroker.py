@@ -1,6 +1,6 @@
 # Create Own Broker for paper trading as well as Store Trad Historys import pandas as pd 
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import pandas as pd
 
 # --------------------[Custom Imports]------------------------
 import os
@@ -16,11 +16,9 @@ def DBConnection_for_Broker():
         account_collection = mongo_connection.get_collection("Account")
         notifications_collection = mongo_connection.get_collection("Notifications")
         orders_collection = mongo_connection.get_collection("Orders")
-        profile_collection = mongo_connection.get_collection("Profile")
         transactions_collection = mongo_connection.get_collection("Transactions")
-        profile_collection.find({})
         print("Database connection established successfully")
-        return profile_collection, transactions_collection, account_collection, notifications_collection, orders_collection,mongo_connection
+        return transactions_collection, account_collection, notifications_collection, orders_collection,mongo_connection
     except Exception as e:
         print(f"Failed to establish database connection: {e}")
         return None, None, None, None, None
@@ -39,7 +37,7 @@ def tbCurrentTimestamp():
 
 class TradBuddyBroker:
     def __init__(self):
-        self.profile_collection, self.transactions_collection, self.account_collection, self.notifications_collection, self.orders_collection, self.mongo_connection = DBConnection_for_Broker()
+        self.transactions_collection, self.account_collection, self.notifications_collection, self.orders_collection, self.mongo_connection = DBConnection_for_Broker()
         self.isAuthenticated = False
         
     # Middelware
@@ -64,8 +62,7 @@ class TradBuddyBroker:
                     "account_id": account_id,
                     "account_balance": data.get("account_balance", float(0)),
                     "is_activate": data.get("is_activate", True),
-                    "trad_indexs": data.get("trad_indexs", []),
-                    "strategy": data.get("strategy", None),
+                    "strategy": data.get("strategy", {}),
                     "max_trad_per_day": data.get("max_trad_per_day", 10),
                     "todays_margin":(data.get("todays_margin", float(0))),
                     "todays_trad_margin": (data.get("todays_trad_margin", float(0))),
@@ -206,7 +203,13 @@ class TradBuddyBroker:
                     "status": 400
                 }
 
-            # Create transaction ID
+        except Exception as e:
+            return {
+                "message": "account_transaction: fail - Failed to perform account transaction.",
+                "body": str(e),
+                "status": "Fail"
+            }
+        finally :
             transaction_id = create_uuid("ACC-TRAN")
             transaction_schema = {
                 "transaction_id": transaction_id,
@@ -223,13 +226,6 @@ class TradBuddyBroker:
                 "message": f"account_transaction: success - Account transaction successful, Transaction ID: {transaction_id}",
                 "body": None,
                 "status": "Ok"
-            }
-
-        except Exception as e:
-            return {
-                "message": "account_transaction: fail - Failed to perform account transaction.",
-                "body": str(e),
-                "status": "Fail"
             }
         
     def account_transaction_view(self,account_id):
