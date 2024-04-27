@@ -70,7 +70,10 @@ class Fyers:
             response = session.generate_token()
             access_token = response['access_token']
             
-            with open(f'{os.getcwd()}/Records/access_token.txt', 'w') as file:
+            current_date = datetime.now().strftime("%Y-%m-%d")
+            file_path = f"{os.getcwd()}/Records/access_token_{current_date}.txt"
+
+            with open(file_path, 'w') as file:
                 file.write(access_token)
             
         finally:
@@ -79,7 +82,9 @@ class Fyers:
 
     def authentication(self):
         if not self.authenticate:
-            access_token_path = f"{os.getcwd()}/Records/access_token.txt"
+            current_date = datetime.now().strftime("%Y-%m-%d")
+            access_token_path = f"{os.getcwd()}/Records/access_token_{current_date}.txt"
+
             if not os.path.exists(access_token_path):
                 open(access_token_path, 'a').close()
             access_token = open(access_token_path, 'r').read().strip()

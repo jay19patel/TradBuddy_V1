@@ -40,21 +40,7 @@ class TradBuddyBroker:
         self.transactions_collection, self.account_collection, self.notifications_collection, self.orders_collection, self.mongo_connection = DBConnection_for_Broker()
         self.isAuthenticated = False
         
-    # Middelware
-    def check_authentication(func):
-        def wrapper(self, *args, **kwargs):
-            if not self.isAuthenticated:
-                return {
-                    "message": f"Authentication required for {func.__name__}",
-                    "body": "Use: profile_create() or profile_login() for Authentication.",
-                    "status": "Fail"
-                }
-            else:
-                return func(self, *args, **kwargs)
-        return wrapper
 
-
-    @check_authentication
     def account_create(self, **data):
         try:
             account_id = f"ACC-{str(self.account_collection.count_documents({}) + 1).zfill(3)}"
@@ -91,7 +77,6 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-    @check_authentication
     def account_update(self, account_id, update_data):
         try:
             print(update_data,"update_data")
@@ -115,7 +100,6 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-    @check_authentication
     def account_get(self, account_id):
         try:
             result = self.account_collection.find_one({"account_id": account_id})
@@ -132,15 +116,13 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
         
-    @check_authentication
-    def account_list(self):
-        result = self.account_collection.find()
+    def account_list(self,query):
+        result = self.account_collection.find(query)
         if result:
             return list(result)
         return []
 
 
-    @check_authentication
     def account_delete(self, account_id):
         try:
             result = self.account_collection.delete_one({"account_id": account_id})
@@ -163,7 +145,6 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-    @check_authentication
     def account_transaction_create(self, transaction_type, amount, account_id, notes=""):
         try:
             account_data = self.account_collection.find_one({"profile_id": self.profile_id, "account_id": account_id})
@@ -243,26 +224,23 @@ class TradBuddyBroker:
                 "body": e,
                 "status": 400
             }
+ 
 
-           
-
-    @check_authentication
     def order_place(self, **data):
         try:
             order_id = create_uuid("ORD")
             isBuyMargin = data.get("buyprice") * data.get("qnty")
             order_schema = {
                 "order_id": order_id,
-                "profile_id": self.profile_id,
                 "account_id": data.get("account_id"),
                 "strategy": data.get("strategy"),
                 "date": tbCurrentTimestamp().strftime("%d-%m-%Y"),
                 "trad_status": "Open",
                 "trad_type": data.get("type", "Buy"),
                 "trad_index": data.get("trad_index"),
-                "trad_side": data.get("side"),
-                "trigger_index": data.get("trigger_index"),
-                "option_symbol": data.get("symbol"),
+                "trad_side": data.get("trad_side"),
+                "trigger_price": data.get("trigger_price"),
+                "option_symbol": data.get("option_symbol"),
                 "qnty": data.get("qnty"),
                 "buy_price": data.get("buyprice"),
                 "sell_price": None,
@@ -284,6 +262,7 @@ class TradBuddyBroker:
                     "status": "Fail"
                 }
 
+            print(account.get("account_balance", 0))
             if account.get("account_balance", 0) < isBuyMargin:
                 return {
                     "message": f"order_place: fail - Failed to place order: Insufficient balance in the Account ID: {data['account_id']} Require Balance is More then {isBuyMargin}",
@@ -295,7 +274,7 @@ class TradBuddyBroker:
             self.account_collection.update_one({"account_id": data["account_id"]}, {"$inc": {"account_balance": -isBuyMargin}})
             return {
                 "message": f"order_place [{order_id}]: success - Order placed successfully.",
-                "body": None,
+                "body": order_id,
                 "status": "Ok"
             }
 
@@ -306,7 +285,6 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-    @check_authentication
     def order_close(self, account_id, order_id, sell_price):
         try:
             order = self.orders_collection.find_one({"order_id": order_id, "account_id": account_id})
@@ -349,7 +327,6 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-    @check_authentication
     def order_book(self, account_id):
         try:
             order_book = self.orders_collection.find_one({"account_id": account_id})
@@ -366,7 +343,6 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-    @check_authentication
     def generate_report(self, account_id):
         try:
             order_book = self.orders_collection.find({"account_id": account_id, "trad_status": "Close"})
@@ -411,7 +387,6 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
     
-    @check_authentication
     def perform_analysis(self, account_id): # Daily data analysis
         try:
             order_book = self.orders_collection.find({"account_id": account_id})
