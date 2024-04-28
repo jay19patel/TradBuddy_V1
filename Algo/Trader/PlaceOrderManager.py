@@ -43,7 +43,7 @@ def get_option_for(trad_index, trad_side, price):
     (option_df["STRIKE PRICE"] == tred_sp)&
     (option_df["EXDATETIME"] >= pd.to_datetime(f"{datetime.now().strftime('%Y-%m-%d')} 10:00:00")) &
     (option_df["SIDE"] == trad_side) &
-    (option_df['INDEX'].str.contains(trad_index,case=False, na=False))
+    (option_df['INDEX'] == trad_index)
     ]
     if final_data.shape[0] == 0:
         print("Somethi wrong ")

@@ -250,6 +250,7 @@ class TradBuddyBroker:
                 "sell_datetime": None,
                 "buy_margin": isBuyMargin,
                 "sell_margin": None,
+                "trailing_count":0,
                 "pnl_status": None,
                 "pnl": None,
                 "notes": data.get("notes")
@@ -281,6 +282,21 @@ class TradBuddyBroker:
         except Exception as e:
             return {
                 "message": "order_place: fail - Failed to place order.",
+                "body": str(e),
+                "status": "Fail"
+            }
+        
+    def order_update(self,order_id,query):
+        try:
+            self.orders_collection.update_one({"order_id": order_id}, {"$set": query})
+            return {
+                        "message": f"order_update [{order_id}]: success - Order Update successfully",
+                        "body": None,
+                        "status": "Ok"
+                    }
+        except Exception as e:
+            return {
+                "message": "order_update: fail - Failed to update the order.",
                 "body": str(e),
                 "status": "Fail"
             }
@@ -326,6 +342,14 @@ class TradBuddyBroker:
                 "body": str(e),
                 "status": "Fail"
             }
+        
+    def order_opens(self):
+        try:
+            order_book = self.orders_collection.find({"trad_status": "Open"})
+            return list(order_book)
+        except:
+            return None
+
 
     def order_book(self, account_id):
         try:
