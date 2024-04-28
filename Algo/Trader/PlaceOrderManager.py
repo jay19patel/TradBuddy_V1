@@ -32,7 +32,6 @@ def fetch_option_details():
 
 def get_option_for(trad_index, trad_side, price):
     tred_sp = round(price,-2)
-    print(tred_sp)
     current_date = datetime.now().strftime('%Y-%m-%d')
     file_path = f"{os.getcwd()}/Records/sym_details_{current_date}.csv"
     if not os.path.exists(file_path):
@@ -52,30 +51,43 @@ def get_option_for(trad_index, trad_side, price):
     else:
         return final_data.iloc[0].to_dict()
 
+def get_index_sortname(option_symbol):
+    index_mapping = {
+        "NSE:NIFTY50-INDEX": "NIFTY",
+        "NSE:NIFTYBANK-INDEX":"BANKNIFTY",
+        "NSE:FINNIFTY-INDEX": "FINNIFTY",
+        "BSE:BANKEX-INDEX": "BANKEX",
+        "BSE:SENSEX-INDEX": "SENSEX"
+    }
+    return index_mapping.get(option_symbol)
 
-# print(get_option_for("BANKNIFTY", "PE", 48541))
-# {'ID': 101124043049546, 'INDEX INFO': 'BANKNIFTY 24 Apr 30 48500 PE', 'LOT': 15, 'TIMESTAMP': 1714471200, 
-#  'SYMBOL': 'NSE:BANKNIFTY2443048500PE', 'INDEX': 'BANKNIFTY', 'STRIKE PRICE': 48500.0, 'SIDE': 'PE', 
-#  'EXDATETIME': Timestamp('2024-04-30 10:00:00')}
 
+async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy):
+    # print(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy)
 
-
-def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy):
     
     # FIND OPTION DETAILS-------------------
-    get_option_details = get_option_for("BANKNIFTY",trad_side,trad_price)
+    get_option_details = get_option_for(get_index_sortname(trad_index),trad_side,trad_price)
     # {'ID': 101124043049532, 'INDEX INFO': 'BANKNIFTY 24 Apr 30 48200 PE', 'LOT': 15, 
     #  'TIMESTAMP': 1714471200, 'SYMBOL': 'NSE:BANKNIFTY2443048200PE', 'INDEX': 'BANKNIFTY', 
     #  'STRIKE PRICE': 48200.0, 'SIDE': 'PE', 'EXDATETIME': ('2024-04-30 10:00:00')}
+
+    if get_option_details == None:
+        print("Option Details Not found")
+        return
+
     option_symbol = get_option_details["SYMBOL"]
     genral_mux = 1
     option_lot = get_option_details["LOT"]
     option_expiry = get_option_details["EXDATETIME"]
     option_id = get_option_details["ID"]
 
-
+    
     # GET LIVE MARKET DATA -------------------
     get_live_data = Fyers.get_current_ltp(f"{trad_index},{option_symbol}")
+    if  "Unknown" in get_live_data:
+        print("Live Data Not found")
+        return 
     # {'NIFTYBANK-INDEX': 48201.05, 'BANKNIFTY2443048200PE': 220}
     ((current_index_name, current_index_price), (current_option_name, current_option_price)) = tuple(zip(get_live_data.keys(),get_live_data.values()))
 

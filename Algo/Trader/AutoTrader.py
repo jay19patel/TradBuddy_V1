@@ -17,7 +17,7 @@ def time_set_for_next_day():
     print("Market schedule set for the next day")
 
 
-async def process_account(account,Fyers,TradBuddy):
+async def process_order_place(account,Fyers,TradBuddy):
     with open(Strategy_path, 'r') as file:
         strategies_results = json.load(file)
         account_number = account["account_id"]
@@ -25,12 +25,13 @@ async def process_account(account,Fyers,TradBuddy):
         for symbol, strategy_key in account["strategys"]:
             status = strategies_results.get(symbol, {}).get(strategy_key)
             price = strategies_results.get(symbol, {}).get("price")
-            tasks.append(PlaceOrder(account_number, strategy_key, symbol, status,price,Fyers,TradBuddy))
+            if status != None:
+                tasks.append(PlaceOrder(account_number, strategy_key, symbol, status,price,Fyers,TradBuddy))
         await asyncio.gather(*tasks)
 
 async def worker(Fyers,TradBuddy):
     accounts = TradBuddy.account_list({"is_activate":"Activate"})
-    await asyncio.gather(*(process_account(account,Fyers,TradBuddy) for account in accounts))
+    await asyncio.gather(*(process_order_place(account,Fyers,TradBuddy) for account in accounts))
 
 
 def run_worker(Fyers,TradBuddy):

@@ -10,9 +10,9 @@ if __name__ == '__main__':
     fyers_obj = Fyers()
     fyers_obj.authentication()
     tb_obj = TradBuddyBroker()
-    # run_worker(fyers_obj,tb_obj)
+    run_worker(fyers_obj,tb_obj)
 
 
-    # Test
-    from Algo.Trader.PlaceOrderManager import PlaceOrder
-    PlaceOrder('ACC-002', 'strategy_2_status', 'NSE:NIFTYBANK-INDEX', 'PE', 48201,fyers_obj, tb_obj)
+    # Test PlaceOrder
+    # from Algo.Trader.PlaceOrderManager import PlaceOrder
+    # PlaceOrder('ACC-002', 'strategy_2_status', 'NSE:NIFTYBANK-INDEX', 'PE', 48201,fyers_obj, tb_obj)
