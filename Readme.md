@@ -29,4 +29,4 @@ Manager handle Hist data and Genarate json file and fetch evry 1 mintes live str
 
 ```py
 ```
-
+{"NSE:NIFTY50-INDEX": {"strategy_1_status": "None", "strategy_2_status": "CE", "price": 22419.95, "updated_datetime": "2024-04-28 22:34:13"}, "NSE:NIFTYBANK-INDEX": {"strategy_1_status": "CE", "strategy_2_status": "None", "price": 48201.05, "updated_datetime": "2024-04-28 22:34:13"}}

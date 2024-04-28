@@ -263,7 +263,6 @@ class TradBuddyBroker:
                     "status": "Fail"
                 }
 
-            print(account.get("account_balance", 0))
             if account.get("account_balance", 0) < isBuyMargin:
                 return {
                     "message": f"order_place: fail - Failed to place order: Insufficient balance in the Account ID: {data['account_id']} Require Balance is More then {isBuyMargin}",

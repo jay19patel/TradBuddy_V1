@@ -98,7 +98,6 @@ async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price
     current_option_sl, current_option_tg = [current_option_price * (100 - index_sl) / 100, current_option_price * (100 + index_tg) / 100]
 
 
-
     order_place_status = TradBuddy.order_place(
         account_id = account_id,
         strategy = strategy_name,
