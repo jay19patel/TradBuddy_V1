@@ -18,6 +18,8 @@ def time_set_for_next_day():
 
 # PLACE ORDER
 async def process_order_place(account,Fyers,TradBuddy):
+    print("ORDER PLACE PROCESS EXECUTE")
+
     with open(Strategy_path, 'r') as file:
         if file.read().strip() == "":
             print("NO JSON")
@@ -32,13 +34,15 @@ async def process_order_place(account,Fyers,TradBuddy):
         for symbol, strategy_key in account["strategys"]:
             status = strategies_results.get(symbol, {}).get(strategy_key)
             price = strategies_results.get(symbol, {}).get("price")
-            if status != "None" :
+            is_already = TradBuddy.order_get({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
+            if status != "None" and len(is_already) >= 0:
                 tasks.append(PlaceOrder(account_number, strategy_key, symbol, status,price,Fyers,TradBuddy))
         await asyncio.gather(*tasks)
 
 
 # CANCEL ORDER 
 async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
+    print("ORDER EXIT PROCESS EXECUTE")
     # trads = {'_id': ObjectId('662de513395e5149ad279c76'), 'order_id': 'ORD-1714283795535873810', 
     #  'account_id': 'ACC-003', 'strategy': 'strategy_1_status', 'date': '28-04-2024', 'trad_status': 'Open',
     #    'trad_type': 'Buy', 'trad_index': 'NSE:NIFTY50-INDEX', 'trad_side': 'CE', 'trigger_price': 22419.95, 
@@ -47,10 +51,12 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
     #      'sell_datetime': None, 'buy_margin': 4687.5, 'sell_margin': None, 'pnl_status': None, 'pnl': None, 'notes': 'Test'}
     # live = {'NIFTY2450222400CE': 187.5, 'BANKNIFTY2443048200CE': 362.3}
     
-    live_price = all_price[trad["option_symbol"].split(":")[1]] 
-    # live_price = 10000
+    # live_price = min(all_price[trad["option_symbol"].split(":")[1]],0.1)
+    live_price = 0.1
     order_id = trad.get("order_id")
     account_id = trad.get("account_id")
+
+    print(account_id,order_id)
     account = TradBuddy.account_get(account_id)
 
 
@@ -95,37 +101,39 @@ async def worker(Fyers,TradBuddy):
 
     # ORDER CANCEL ----------------------------
     open_trads = TradBuddy.order_opens()
-    if not open_trads or  len(open_trads) != 0 :
+    print("OPEN TRADS :",len(open_trads))
+    if len(open_trads) == 0 :
         return
     open_order_symbols =','.join({ i["option_symbol"] for i in  open_trads})
     open_order_live_price = Fyers.get_current_ltp(open_order_symbols)
     print(open_order_symbols)
     print(open_order_live_price)
-    if "Unknown" not in open_order_live_price:
+    if "Unknown" not in open_order_live_price :
         await asyncio.gather(*(process_order_cancel(trads,open_order_live_price,Fyers,TradBuddy) for trads in open_trads))
 
 
 # TEST RUN---------------------------
-def run_worker(Fyers,TradBuddy):
-    asyncio.run(worker(Fyers,TradBuddy))
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+# def run_worker(Fyers,TradBuddy):
+#     asyncio.run(worker(Fyers,TradBuddy))
+#     while True:
+#         schedule.run_pending()
+#         time.sleep(1)
 
 
 
 # MAIN RUN---------------------------
-# def run_worker(Fyers,TradBuddy):
-#     current_time = datetime.now().time()
-#     market_status = "Open"  
-#     if market_status == "Open":
-#         print("Algorithm is Online")
-#         # schedule.every(1).minutes.do(lambda: time_set_for_next_day() if current_time > datetime.strptime("15:15", "%H:%M").time() else asyncio.run(worker(Fyers,TradBuddy)))
-#         asyncio.run(worker(Fyers,TradBuddy))
-#     else:
-#         print("Market is closed")
+def run_worker(Fyers,TradBuddy):
+    current_time = datetime.now().time()
+    market_status = "Open"  
+    if market_status == "Open":
+        print("Algorithm is Online")
+        # schedule.every(1).minutes.do(lambda: time_set_for_next_day() if current_time > datetime.strptime("15:15", "%H:%M").time() else asyncio.run(worker(Fyers,TradBuddy)))
+        schedule.every(10).seconds.do(lambda: asyncio.run(worker(Fyers,TradBuddy)))
+        # asyncio.run(worker(Fyers,TradBuddy))
+    else:
+        print("Market is closed")
 
-#     while True:
-#         schedule.run_pending()
-#         time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 

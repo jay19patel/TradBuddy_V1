@@ -9,15 +9,16 @@ if __name__ == '__main__':
     fyers_obj = Fyers()
     fyers_obj.authentication()
     tb_obj = TradBuddyBroker()
-    # thread1 = threading.Thread(target=StrategyManagerExecution, args=(fyers_obj,))
+    thread1 = threading.Thread(target=StrategyManagerExecution, args=(fyers_obj,))
     thread2 = threading.Thread(target=run_worker, args=(fyers_obj, tb_obj))
 
-    # thread1.start()
+    thread1.start()
     thread2.start()
 
     # Wait for both threads to finish
     # thread1.join()
-    thread2.join()
+    # thread2.join()
+
 
 
 # if __name__ == '__main__':

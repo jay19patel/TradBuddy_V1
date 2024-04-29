@@ -303,7 +303,7 @@ class TradBuddyBroker:
     def order_close(self, account_id, order_id, sell_price):
         try:
             order = self.orders_collection.find_one({"order_id": order_id, "account_id": account_id})
-            if order and sell_price:
+            if order:
                 isSellMargin = float(order.get("qnty") * sell_price)
                 isPnl = isSellMargin - order.get("buy_margin")
                 update_data = {
@@ -314,6 +314,7 @@ class TradBuddyBroker:
                     "pnl_status": "Profit" if isPnl >= 1 else "Loss",
                     "pnl": isPnl
                 }
+                # Update order document
                 result_order = self.orders_collection.update_one({"order_id": order_id, "account_id": account_id}, {"$set": update_data})
                 result_account = self.account_collection.update_one({"account_id": account_id}, {"$inc": {"account_balance": isSellMargin}})
 
@@ -331,9 +332,9 @@ class TradBuddyBroker:
                     }
             else:
                 return {
-                    "message": "order_close: fail - Something wrong in Order Close",
+                    "message": "order_close: fail - Order not found.",
                     "body": None,
-                    "status": 400
+                    "status": 404
                 }
         except Exception as e:
             return {
@@ -341,6 +342,8 @@ class TradBuddyBroker:
                 "body": str(e),
                 "status": "Fail"
             }
+
+
         
     def order_opens(self):
         try:
@@ -349,6 +352,12 @@ class TradBuddyBroker:
         except:
             return None
 
+    def order_get(self,query):
+        try:
+            order_book = self.orders_collection.find(query)
+            return list(order_book)
+        except:
+            return None
 
     def order_book(self, account_id):
         try:

@@ -64,7 +64,7 @@ def get_index_sortname(option_symbol):
 
 async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy):
     # print(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy)
-
+    print("Place Order Execution Start")
     
     # FIND OPTION DETAILS-------------------
     get_option_details = get_option_for(get_index_sortname(trad_index),trad_side,trad_price)

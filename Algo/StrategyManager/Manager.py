@@ -50,11 +50,6 @@ def store_strategy_statuses(fyers_obj):
         json.dump(results, f)
     logging.info("Status Update successful")
 
-def start_algo(fyers_obj):
-    schedule.every(1).minutes.do(store_strategy_statuses,fyers_obj)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
 # def start_algo(fyers_obj):
 #     current_time = datetime.now().time()
@@ -68,7 +63,8 @@ def start_algo(fyers_obj):
 
 
 def StrategyManagerExecution(fyers_obj):
-    start_algo(fyers_obj)
+    schedule.every(30).seconds.do(lambda: store_strategy_statuses(fyers_obj))
     while True:
-        schedule.run_pending()
-        time.sleep(1)
+            schedule.run_pending()
+            time.sleep(1)
+
