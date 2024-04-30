@@ -1,70 +1,61 @@
-
-import time
 import json
-from datetime import datetime,timedelta
-import schedule
 import logging
-import concurrent.futures
 import os
+from datetime import datetime
+import asyncio
+
 from Algo.Strategys.BaseStategys import strategy_1, strategy_2
+
 
 logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def Time_set_for_next_day():
-    schedule.clear()
-    schedule.every().day.at("09:15").do(start_algo)
-    logging.info("Algorithm scheduled for the next day")
+async def find_entries(index_data, fyers_obj, TimeFrame):
+    try:
+        data = fyers_obj.Historical_Data(index_data[0], TimeFrame)
+        # Run strategy_1 and strategy_2 concurrently using asyncio.gather
+        strategy_1_task = strategy_1(data, index_data[1])
+        strategy_2_task = strategy_2(data, index_data[1])
+        strategy_1_status, strategy_2_status = await asyncio.gather(strategy_1_task, strategy_2_task)
+        
+        return index_data[0], {
+            "strategy_1_status": strategy_1_status,
+            "strategy_2_status": strategy_2_status,
+            "price": index_data[1],
+            "updated_datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+    except Exception as e:
+        error_msg = f"Error occurred while processing {index_data[0]}: {e}"
+        print(error_msg)
+        logging.error(error_msg)
+        return None
 
 
-def store_strategy_statuses(fyers_obj):   
+async def store_strategy_statuses(fyers_obj):   
     print("Updating strategy statuses...")
     Symbol = ["NSE:NIFTY50-INDEX", "NSE:NIFTYBANK-INDEX"]
     TimeFrame = "15"
     results = {}
 
-    def find_entries(index_data):
-        # index_data is live Price 
-        try:
-            data = fyers_obj.Historical_Data(index_data[0], TimeFrame)
-            strategy_1_status = strategy_1(data, index_data[1])
-            strategy_2_status = strategy_2(data, index_data[1])
-            return index_data[0], {
-                "strategy_1_status": strategy_1_status,
-                "strategy_2_status": strategy_2_status,
-                "price":index_data[1],
-                "updated_datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            }
-        except Exception as e:
-            error_msg = f"Error occurred while processing {index_data[0]}: {e}"
-            print(error_msg)
-            logging.error(error_msg)
-            return None
+    index_data = zip(Symbol, fyers_obj.get_current_ltp(",".join(Symbol)).values())
+    gathered_results = await asyncio.gather(*(find_entries(data, fyers_obj, TimeFrame) for data in index_data))
+    
+    print(gathered_results)
+    for result in gathered_results:
+        if result:
+            results[result[0]] = result[1]
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        for result in executor.map(find_entries, zip(Symbol, fyers_obj.get_current_ltp(",".join(Symbol)).values())):
-            if result:
-                results[result[0]] = result[1]
-
-    with open(f"{os.getcwd()}/Records/strategies_results.json", "w") as f:
-        json.dump(results, f)
-    logging.info("Status Update successful")
-
-
-# def start_algo(fyers_obj):
-#     current_time = datetime.now().time()
-#     market_status = fyers_obj.MarketStatus()
-#     if datetime.strptime("9:15", "%H:%M").time() <= current_time <= datetime.strptime("15:15", "%H:%M").time() and market_status == "OPEN":
-#         logging.info("Algorithm is Online")
-#         schedule.every(1).minutes.do(lambda: Time_set_for_next_day() if current_time > datetime.strptime("15:15", "%H:%M").time() else store_strategy_statuses(fyers_obj))
-#     else:
-#         logging.info("Algorithm is Offline")
-#         Time_set_for_next_day()
+            
+    output_file_path = os.path.join(os.getcwd(), "Records", "strategies_results.json")
+    try:
+        with open(output_file_path, "w") as f:
+            json.dump(results, f)
+        logging.info("Status Update successful")
+    except Exception as e:
+        error_msg = f"Error occurred while writing to strategies_results.json: {e}"
+        print(error_msg)
+        logging.error(error_msg)
 
 
 def StrategyManagerExecution(fyers_obj):
-    schedule.every(30).seconds.do(lambda: store_strategy_statuses(fyers_obj))
-    while True:
-            schedule.run_pending()
-            time.sleep(1)
-
+    asyncio.run(store_strategy_statuses(fyers_obj))
