@@ -5,7 +5,7 @@ from datetime import datetime
 import asyncio
 
 from Algo.Strategys.BaseStategys import strategy_1, strategy_2
-
+from Utility.TimeSupervisor import market_time_decorator
 
 logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -56,6 +56,7 @@ async def store_strategy_statuses(fyers_obj):
         print(error_msg)
         logging.error(error_msg)
 
-
+@market_time_decorator(Open_time = "9:15",Close_time = "15:15",market_status="Open",Interval = 5)
 def StrategyManagerExecution(fyers_obj):
     asyncio.run(store_strategy_statuses(fyers_obj))
+
