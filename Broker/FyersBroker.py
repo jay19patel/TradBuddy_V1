@@ -10,7 +10,15 @@ import pytz
 from datetime import datetime , timedelta,date
 import os
 from dotenv import load_dotenv
+import glob
 load_dotenv()
+
+
+import logging
+logging.basicConfig(filename=f"{os.getcwd()}/Records/Broker.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+
+
 class Fyers:
     def __init__(self) -> None:
 
@@ -71,13 +79,14 @@ class Fyers:
             access_token = response['access_token']
             
             current_date = datetime.now().strftime("%Y-%m-%d")
+            [os.remove(file) for file in glob.glob(f"{os.getcwd()}/Records/sym_details_*")]
             file_path = f"{os.getcwd()}/Records/access_token_{current_date}.txt"
 
             with open(file_path, 'w') as file:
                 file.write(access_token)
             
         finally:
-            print("[ Fyers Access Token  ]")
+            logging.info("[ Fyers Access Token  ]")
             driver.quit()
 
     def authentication(self):
@@ -91,25 +100,25 @@ class Fyers:
             if access_token:
                 try:
                     fyers = fyersModel.FyersModel(client_id=self.client_id, is_async=False, token=access_token, log_path=f"{os.getcwd()}/Records")
-                    print(f"Successful Login: {fyers.get_profile()['data']['name']}")
+                    logging.info(f"Successful Login: {fyers.get_profile()['data']['name']}")
                     self.authenticate = True
                     self.access_token = access_token
                     self.fyers_instance = fyers
-                    print("[ Fyers Authenticated  ]")
+                    logging.info("[ Fyers Authenticated  ]")
                 
                 except Exception as e:
-                    print(f" Authentication Error:{e}")
-                    print(" [ Resolve Error Again.... ]")
+                    logging.info(f"Authentication Error:{e}")
+                    logging.info("Resolve Error Again....")
                     self.get_access_token()
                     self.authentication()
                     
             else:
                 self.get_access_token()
                 self.authentication()
-                print("[ Resolve Error Again.... ]")
+                logging.info("Resolve Error Again....")
 
         else:
-            print("[ Alredy Authenticated ]")
+            logging.info("Alredy Authenticated")
 
     def get_current_ltp(self, option_symbol):
             if self.authenticate:
@@ -118,15 +127,15 @@ class Fyers:
                 if data['code'] == 200:
                     return {item['v'].get('short_name', 'Unknown'): item['v'].get('lp', 'Unknown') for item in data['d']}
                 else:
-                    print("[DATA NOT GET FROM FYERS]")
+                    logging.info("DATA NOT GET FROM FYERS")
                     return False
             else:
-                print("[ERROR: Authentication Failed]")
+                logging.info("ERROR: Authentication Failed")
                 return "[ERROR: Authentication Failed]"
     def MarketStatus(self):
-        # market_status = self.fyers_instance.market_status()
-        # return market_status["marketStatus"][0]["status"]
-        return "OPEN"
+        market_status = self.fyers_instance.market_status()
+        return market_status["marketStatus"][0]["status"]
+        # return "OPEN"
             
     def Historical_Data(self,Symbol,TimeFrame):
         data = {

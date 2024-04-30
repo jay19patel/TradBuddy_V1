@@ -5,9 +5,17 @@ from datetime import datetime
 import os
 import io
 import os
+import glob
+
+
+
+import logging
+logging.basicConfig(filename=f"{os.getcwd()}/Records/AutoTrader.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+
 
 def fetch_option_details():
-    print("Fetching new option details...")
+    logging.info("Fetching new Option details from Online")
     spotnames = ['BANKNIFTY', 'FINNIFTY', 'NIFTY', 'SENSEX', 'BANKEX'] 
     nse_fetch = requests.get('https://public.fyers.in/sym_details/NSE_FO.csv')
     bse_fetch = requests.get('https://public.fyers.in/sym_details/BSE_FO.csv')
@@ -24,9 +32,13 @@ def fetch_option_details():
     current_date = datetime.now().strftime('%Y-%m-%d')
     filtered_df = row_df[row_df['INDEX'].isin(spotnames) & (pd.to_datetime(row_df["TIMESTAMP"], unit='s').dt.date >= datetime.now().date())]
     
+
+    [os.remove(file) for file in glob.glob(f"{os.getcwd()}/Records/sym_details_*")]
+
     file_path = f"{os.getcwd()}/Records/sym_details_{current_date}.csv"
     filtered_df.to_csv(file_path, index=False)
-    print(f"Option details saved to {file_path}") 
+    logging.info(f"Option details Successfully saved to {file_path}") 
+
     
     
 
@@ -46,7 +58,7 @@ def get_option_for(trad_index, trad_side, price):
     (option_df['INDEX'] == trad_index)
     ]
     if final_data.shape[0] == 0:
-        print("Somethi wrong ")
+        logging.info("Filter Datatable is Not available Some this wrong ")
         return None
     else:
         return final_data.iloc[0].to_dict()
@@ -64,8 +76,7 @@ def get_index_sortname(option_symbol):
 
 async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy):
     # print(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy)
-    print("Place Order Execution Start")
-    
+
     # FIND OPTION DETAILS-------------------
     get_option_details = get_option_for(get_index_sortname(trad_index),trad_side,trad_price)
     # {'ID': 101124043049532, 'INDEX INFO': 'BANKNIFTY 24 Apr 30 48200 PE', 'LOT': 15, 
@@ -73,7 +84,7 @@ async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price
     #  'STRIKE PRICE': 48200.0, 'SIDE': 'PE', 'EXDATETIME': ('2024-04-30 10:00:00')}
 
     if get_option_details == None:
-        print("Option Details Not found")
+        logging.info("Option Details Not found")
         return
 
     option_symbol = get_option_details["SYMBOL"]
@@ -86,7 +97,7 @@ async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price
     # GET LIVE MARKET DATA -------------------
     get_live_data = Fyers.get_current_ltp(f"{trad_index},{option_symbol}")
     if  "Unknown" in get_live_data:
-        print("Live Data Not found")
+        logging.info(f"Live Data Not found for index :{trad_index},{option_symbol}")
         return 
     # {'NIFTYBANK-INDEX': 48201.05, 'BANKNIFTY2443048200PE': 220}
     ((current_index_name, current_index_price), (current_option_name, current_option_price)) = tuple(zip(get_live_data.keys(),get_live_data.values()))
@@ -111,6 +122,6 @@ async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price
         target_price = current_option_tg,
         notes = "Test"        
     )
-    print(order_place_status)
+    logging.info(f" Order Placed : {order_place_status}")
     
     

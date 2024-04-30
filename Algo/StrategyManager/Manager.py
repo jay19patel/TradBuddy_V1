@@ -32,7 +32,7 @@ async def find_entries(index_data, fyers_obj, TimeFrame):
 
 
 async def store_strategy_statuses(fyers_obj):   
-    print("Updating strategy statuses...")
+    print("Strategy Manager is Runing.")
     Symbol = ["NSE:NIFTY50-INDEX", "NSE:NIFTYBANK-INDEX"]
     TimeFrame = "15"
     results = {}
@@ -40,7 +40,6 @@ async def store_strategy_statuses(fyers_obj):
     index_data = zip(Symbol, fyers_obj.get_current_ltp(",".join(Symbol)).values())
     gathered_results = await asyncio.gather(*(find_entries(data, fyers_obj, TimeFrame) for data in index_data))
     
-    print(gathered_results)
     for result in gathered_results:
         if result:
             results[result[0]] = result[1]
@@ -50,13 +49,13 @@ async def store_strategy_statuses(fyers_obj):
     try:
         with open(output_file_path, "w") as f:
             json.dump(results, f)
-        logging.info("Status Update successful")
+        logging.info("Strategy Manager Status Update successful")
     except Exception as e:
         error_msg = f"Error occurred while writing to strategies_results.json: {e}"
         print(error_msg)
         logging.error(error_msg)
 
-@market_time_decorator(Open_time = "9:15",Close_time = "15:15",market_status="Open",Interval = 5)
+@market_time_decorator(Open_time = "9:15",Close_time = "23:15",market_status="Open",Interval = 30)
 def StrategyManagerExecution(fyers_obj):
     asyncio.run(store_strategy_statuses(fyers_obj))
 

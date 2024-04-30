@@ -1,1 +1,1 @@
-{"NSE:NIFTY50-INDEX": {"strategy_1_status": "None", "strategy_2_status": "None", "price": 22643.4, "updated_datetime": "2024-04-29 23:06:12"}, "NSE:NIFTYBANK-INDEX": {"strategy_1_status": "None", "strategy_2_status": "None", "price": 49424.05, "updated_datetime": "2024-04-29 23:06:12"}}
+{"NSE:NIFTY50-INDEX": {"strategy_1_status": "CE", "strategy_2_status": "CE", "price": 22604.85, "updated_datetime": "2024-04-30 20:23:54"}, "NSE:NIFTYBANK-INDEX": {"strategy_1_status": "CE", "strategy_2_status": "PE", "price": 49396.75, "updated_datetime": "2024-04-30 20:23:54"}}
