@@ -10,7 +10,7 @@ import glob
 
 
 import logging
-logging.basicConfig(filename=f"{os.getcwd()}/Records/AutoTrader.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 

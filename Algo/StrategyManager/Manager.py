@@ -28,7 +28,7 @@ async def find_entries(index_data, fyers_obj, TimeFrame):
         error_msg = f"Error occurred while processing {index_data[0]}: {e}"
         print(error_msg)
         logging.error(error_msg)
-        return None
+        return []
 
 
 async def store_strategy_statuses(fyers_obj):   

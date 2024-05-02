@@ -31,8 +31,4 @@ if __name__ == '__main__':
 
 
 
-# if __name__ == '__main__':
-#     fyers_obj = Fyers()
-#     fyers_obj.authentication()
-#     tb_obj = TradBuddyBroker()
-#     StrategyManagerExecution(fyers_obj,)
+

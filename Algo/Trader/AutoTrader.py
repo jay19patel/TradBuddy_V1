@@ -8,7 +8,7 @@ import logging
 
 from Algo.Trader.PlaceOrderManager import PlaceOrder
 
-logging.basicConfig(filename=f"{os.getcwd()}/Records/AutoTrader.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 Strategy_path = f"{os.getcwd()}/Records/strategies_results.json"
 

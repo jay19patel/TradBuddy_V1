@@ -15,7 +15,7 @@ load_dotenv()
 
 
 import logging
-logging.basicConfig(filename=f"{os.getcwd()}/Records/Broker.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 
@@ -107,18 +107,18 @@ class Fyers:
                     logging.info("[ Fyers Authenticated  ]")
                 
                 except Exception as e:
-                    logging.info(f"Authentication Error:{e}")
-                    logging.info("Resolve Error Again....")
+                    logging.warning(f"Authentication Error:{e}")
+                    logging.warning("Resolve Error Again....")
                     self.get_access_token()
                     self.authentication()
                     
             else:
                 self.get_access_token()
                 self.authentication()
-                logging.info("Resolve Error Again....")
+                logging.warning("Resolve Error Again....")
 
         else:
-            logging.info("Alredy Authenticated")
+            logging.warning("Alredy Authenticated")
 
     def get_current_ltp(self, option_symbol):
             if self.authenticate:
@@ -127,10 +127,10 @@ class Fyers:
                 if data['code'] == 200:
                     return {item['v'].get('short_name', 'Unknown'): item['v'].get('lp', 'Unknown') for item in data['d']}
                 else:
-                    logging.info("DATA NOT GET FROM FYERS")
+                    logging.warning("DATA NOT GET FROM FYERS")
                     return False
             else:
-                logging.info("ERROR: Authentication Failed")
+                logging.error("ERROR: Authentication Failed")
                 return "[ERROR: Authentication Failed]"
     def MarketStatus(self):
         market_status = self.fyers_instance.market_status()
