@@ -78,6 +78,7 @@ async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price
     # print(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy)
 
     # FIND OPTION DETAILS-------------------
+    print(get_index_sortname(trad_index),trad_side,trad_price)
     get_option_details = get_option_for(get_index_sortname(trad_index),trad_side,trad_price)
     # {'ID': 101124043049532, 'INDEX INFO': 'BANKNIFTY 24 Apr 30 48200 PE', 'LOT': 15, 
     #  'TIMESTAMP': 1714471200, 'SYMBOL': 'NSE:BANKNIFTY2443048200PE', 'INDEX': 'BANKNIFTY', 
