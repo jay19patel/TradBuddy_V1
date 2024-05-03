@@ -11,6 +11,10 @@ from datetime import datetime , timedelta,date
 import os
 from dotenv import load_dotenv
 import glob
+
+from Utility.Generate_Daterange import generate_date_range
+
+
 load_dotenv()
 
 
@@ -157,5 +161,28 @@ class Fyers:
             return df
         else:
             return row_data['s']
+        
+    def Big_Historical_Data(self,Symbol,TimeFrame,days=1):
+        row_data = []
+        for i in  generate_date_range(days):
+            startdate = i[0].date()
+            enddate = i[1].date()
+            data = {
+                "symbol":Symbol,
+                "resolution": TimeFrame,
+                "date_format":"1",
+                "range_from":startdate,
+                "range_to":enddate,
+                "cont_flag":"0"
+                }
+            row_df =  self.fyers_instance.history(data=data)
+            row_data.extend(row_df['candles'])
+            
+        df = pd.DataFrame(row_data)
+        columns_name = ['Datetime','Open','High','Low','Close','Volume']
+        df.columns = columns_name
+        df['Datetime'] = pd.to_datetime(df['Datetime'], unit='s')
+        df['Datetime'] = df['Datetime'].dt.tz_localize(pytz.utc).dt.tz_convert('Asia/Kolkata')
+        df['Datetime'] = df['Datetime'].dt.tz_localize(None)
 
-
+        return df
