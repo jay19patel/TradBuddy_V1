@@ -1,20 +1,14 @@
 from Broker.FyersBroker import Fyers
 import pandas as pd
-import yfinance as yf
 import pandas as pd
-import datetime
 from ta.trend import EMAIndicator
 import pandas_ta as pdta
-import numpy as np
 import ta
 
 
 
 fyers_obj = Fyers()
 fyers_obj.authentication()
-
-
-# row_data = fyers_obj.Big_Historical_Data("NSE:NIFTY50-INDEX",1,1200)
 
 temp = None
 MaxList = list()
@@ -86,11 +80,12 @@ def Get_Main_DataSet():
     merged_df = df_day.merge(df, on='Day_Date', how='inner')
     merged_df.dropna(inplace=True)
     merged_df.drop(['Day_Datetime'], axis=1, inplace=True)
-    merged_df.to_csv("MainDataSet.csv",index=False)
+    merged_df.to_csv("Jupyter Notebook/MainDataSet.csv",index=False)
+    print("Backtesing Data Save.")
     # return merged_df
 
 
-print(Get_Main_DataSet())
+Get_Main_DataSet()
 
 
 # df["Status"] = (df['Pivot'] - df['Pivot'].shift(5) >= 60).shift(-6)
