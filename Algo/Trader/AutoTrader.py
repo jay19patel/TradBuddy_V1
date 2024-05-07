@@ -101,7 +101,7 @@ async def worker(Fyers,TradBuddy):
 
 
 from Utility.TimeSupervisor import market_time_decorator
-@market_time_decorator(Open_time = "9:15",Close_time = "23:15",market_status="Open",Interval = 30)
+@market_time_decorator(Open_time = "9:15",Close_time = "23:40",market_status="Open",Interval = 10)
 def run_worker(Fyers,TradBuddy):
     asyncio.run(worker(Fyers,TradBuddy))
 

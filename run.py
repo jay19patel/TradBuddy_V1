@@ -14,14 +14,14 @@ if __name__ == '__main__':
     # StrategyManagerExecution(fyers_obj)
     # run_worker(fyers_obj,tb_obj)
 
-    thread1 = threading.Thread(target=StrategyManagerExecution, args=(fyers_obj,))
+    # thread1 = threading.Thread(target=StrategyManagerExecution, args=(fyers_obj,))
     thread2 = threading.Thread(target=run_worker, args=(fyers_obj, tb_obj))
 
-    thread1.start()
+    # thread1.start()
     thread2.start()
 
     # Wait for both threads to finish
-    thread1.join()
+    # thread1.join()
     thread2.join()
 
 
