@@ -83,7 +83,7 @@ class Fyers:
             access_token = response['access_token']
             
             current_date = datetime.now().strftime("%Y-%m-%d")
-            [os.remove(file) for file in glob.glob(f"{os.getcwd()}/Records/sym_details_*")]
+            [os.remove(file) for file in glob.glob(f"{os.getcwd()}/Records/access_token_*")]
             file_path = f"{os.getcwd()}/Records/access_token_{current_date}.txt"
 
             with open(file_path, 'w') as file:

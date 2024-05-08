@@ -30,8 +30,20 @@ def fetch_option_details():
     row_df["EXDATETIME"] = pd.to_datetime(row_df["TIMESTAMP"], unit='s').dt.date
 
     current_date = datetime.now().strftime('%Y-%m-%d')
-    filtered_df = row_df[row_df['INDEX'].isin(spotnames) & (pd.to_datetime(row_df["TIMESTAMP"], unit='s').dt.date >= datetime.now().date())]
-    
+    filtered_df_row= row_df[row_df['INDEX'].isin(spotnames) & (pd.to_datetime(row_df["TIMESTAMP"], unit='s').dt.date >= datetime.now().date())]
+    # If need then remove
+    filtered_df = filtered_df_row.copy()
+
+    filtered_df["INDEX"].replace({
+        "NIFTY": "NSE:NIFTY50-INDEX",
+        "BANKNIFTY": "NSE:NIFTYBANK-INDEX",
+        "FINNIFTY": "NSE:NIFTY50-INDEX",
+        "BANKEX": "NSE:BANKEX-INDEX",
+        "SENSEX": "NSE:SENSEX-INDEX"
+        },
+        inplace=True)
+
+
     [os.remove(file) for file in glob.glob(f"{os.getcwd()}/Records/sym_details_*")]
 
     file_path = f"{os.getcwd()}/Records/sym_details_{current_date}.csv"
@@ -50,6 +62,7 @@ def get_option_for(trad_index, trad_side, price,expiry = 0):
 
     option_df = pd.read_csv(file_path)
     option_df["EXDATETIME"] = pd.to_datetime(option_df["TIMESTAMP"], unit='s').dt.date
+
     final_data = option_df[
     (option_df["STRIKE PRICE"] == tred_sp)&
     (option_df["EXDATETIME"] >= datetime.now().date()) &
@@ -57,7 +70,7 @@ def get_option_for(trad_index, trad_side, price,expiry = 0):
     (option_df['INDEX'] == trad_index)
     ]
 
-    final_data.to_csv("TEST.csv")
+
     if final_data.shape[0] == 0:
         logging.info("Filter Datatable is Not available Some this wrong ")
         return None
@@ -71,8 +84,8 @@ def todays_expiry():
     file_path = f"{os.getcwd()}/Records/sym_details_{current_date}.csv"
     if not os.path.exists(file_path):
         fetch_option_details()
-    
     option_df = pd.read_csv(file_path)
     option_df["EXDATETIME"] = pd.to_datetime(option_df["TIMESTAMP"], unit='s').dt.date
     final_data = option_df[option_df["EXDATETIME"] == datetime.now().date()]
-    print(final_data["INDEX"].unique())
+    print(" Expiry Indexs",final_data["INDEX"].unique())
+    return final_data["INDEX"].unique().tolist()
