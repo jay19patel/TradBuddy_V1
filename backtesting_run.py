@@ -16,25 +16,25 @@ MinList = list()
 def FindMinMax(row):
     global temp,MinList,MaxList
     if temp!= None :
-        if row["Trend"] == 1 and temp == 1:
+        if row["SuperTrend"] == 1 and temp == 1:
             MaxList.append(row["High"])
-        elif row["Trend"] == -1 and temp == -1:
+        elif row["SuperTrend"] == -1 and temp == -1:
             MinList.append(row["Low"])
             
-        elif row["Trend"] == -1 and temp == 1:
+        elif row["SuperTrend"] == -1 and temp == 1:
             MinList.clear()
             MinList.append(row["Low"])
-            temp = row["Trend"]
+            temp = row["SuperTrend"]
             
-        elif row["Trend"] == 1 and temp == -1:
+        elif row["SuperTrend"] == 1 and temp == -1:
             MaxList.clear()
             MaxList.append(row["High"])
-            temp = row["Trend"]
+            temp = row["SuperTrend"]
 
         return min(MinList),max(MaxList)
             
     else:
-        temp = row["Trend"]
+        temp = row["SuperTrend"]
         MaxList.append(row["High"])
         MinList.append(row["Low"])
     
@@ -42,7 +42,7 @@ def FindMinMax(row):
 
 def Get_Main_DataSet():
     index_name = "NSE:NIFTY50-INDEX"
-    time_frame = "15" # 15 minutes
+    time_frame = "1D" # 15 minutes
     days = 1200 # 1 day data 
     df = fyers_obj.Big_Historical_Data(index_name,time_frame,days)
     df_day = fyers_obj.Big_Historical_Data(index_name,"1D",days)
@@ -52,15 +52,25 @@ def Get_Main_DataSet():
 
     super_trend = pdta.supertrend(high=df_day['High'], low=df_day['Low'], close=df_day['Close'], length=50, multiplier=4)
 
-    df_day['Trend'] = super_trend['SUPERTd_50_4.0']
+    df_day['SuperTrend'] = super_trend['SUPERTd_50_4.0']
+    df_day['Candle'] = df_day.apply(lambda row: 'Green' if row['Close'] >= row['Open'] else 'Red', axis=1)
+    df_day['CandleBody'] = abs(df_day['High'] - df_day['Low'])
+    df_day['5EMA'] = EMAIndicator(close=df_day['Close'], window=5, fillna=False).ema_indicator()
+    df_day['15EMA'] = EMAIndicator(close=df_day['Close'], window=15, fillna=False).ema_indicator()
+    df_day['20EMA'] = EMAIndicator(close=df_day['Close'], window=20, fillna=False).ema_indicator()
+    df_day['50EMA'] = EMAIndicator(close=df_day['Close'], window=50, fillna=False).ema_indicator()
+    df_day['200EMA'] = EMAIndicator(close=df_day['Close'], window=200, fillna=False).ema_indicator()
+    df_day['RSI'] = ta.momentum.RSIIndicator(df_day['Close'],window=6).rsi()
+
+
     df_day['Datetime'] = pd.to_datetime(df_day['Datetime'])
     df_day['Date'] = df_day['Datetime'].dt.date
-
     df_day[['SwingMin', 'SwingMax']] = df_day.apply(FindMinMax, axis=1, result_type='expand')
     df_day = df_day.add_prefix('Day_')
 
     df['Pivot'] = df[["High", "Low", "Close"]].mean(axis=1)
     df['Candle'] = df.apply(lambda row: 'Green' if row['Close'] >= row['Open'] else 'Red', axis=1)
+    df['CandleBody'] = abs(df['High'] - df['Low'])
     df['5EMA'] = EMAIndicator(close=df['Close'], window=5, fillna=False).ema_indicator()
     df['15EMA'] = EMAIndicator(close=df['Close'], window=15, fillna=False).ema_indicator()
     df['20EMA'] = EMAIndicator(close=df['Close'], window=20, fillna=False).ema_indicator()
@@ -68,10 +78,8 @@ def Get_Main_DataSet():
     df['200EMA'] = EMAIndicator(close=df['Close'], window=200, fillna=False).ema_indicator()
     df['RSI'] = ta.momentum.RSIIndicator(df['Close'],window=6).rsi()
     super_trend = pdta.supertrend(high=df['High'], low=df['Low'], close=df['Close'], length=50, multiplier=4)
-    df['Trend'] = super_trend['SUPERTd_50_4.0']
-    df['CandleBody'] = abs(df['Close'] - df['Open'])
+    df['SuperTrend'] = super_trend['SUPERTd_50_4.0']
     df.dropna(inplace=True)
-
     df[["Small_Swing_Min","Small_Swing_Max"]]=df.apply(FindMinMax, axis=1, result_type='expand')
 
     df['Datetime'] = pd.to_datetime(df['Datetime'])
@@ -80,7 +88,7 @@ def Get_Main_DataSet():
     merged_df = df_day.merge(df, on='Day_Date', how='inner')
     merged_df.dropna(inplace=True)
     merged_df.drop(['Day_Datetime'], axis=1, inplace=True)
-    merged_df.to_csv("Jupyter Notebook/MainDataSet.csv",index=False)
+    merged_df.to_csv("Jupyter Notebook/MainDataSet1D.csv",index=False)
     print("Backtesing Data Save.")
     # return merged_df
 
