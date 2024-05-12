@@ -60,16 +60,16 @@ def Get_Main_DataSet():
     df_day['20EMA'] = EMAIndicator(close=df_day['Close'], window=20, fillna=False).ema_indicator()
     df_day['50EMA'] = EMAIndicator(close=df_day['Close'], window=50, fillna=False).ema_indicator()
     df_day['200EMA'] = EMAIndicator(close=df_day['Close'], window=200, fillna=False).ema_indicator()
-    df_day['RSI'] = ta.momentum.RSIIndicator(df_day['Close'],window=6).rsi()
+    df_day['RSI'] = ta.momentum.RSIIndicator(df_day['Close'],window=4).rsi()
 
     # SHADOW FIND 
-    df_day_upper_shadow = df_day['High'] - df_day[['Close', 'Open']].max(axis=1)
-    df_day_lower_shadow = df_day[['Close', 'Open']].min(axis=1) - df_day['Low']
-    total_range = df_day_upper_shadow + df_day_lower_shadow
+    df_day["upper_shadow"] = df_day['High'] - df_day[['Close', 'Open']].max(axis=1)
+    df_day["lower_shadow"] = df_day[['Close', 'Open']].min(axis=1) - df_day['Low']
+    df_day["total_shadow"] = df_day["upper_shadow"] + df_day["lower_shadow"]
 
     # Calculate percentage of upper and lower shadows
-    df_day["upper_shadow_pr"] = (df_day_upper_shadow / total_range )*100
-    df_day["lower_shadow_pr"] = (df_day_lower_shadow / total_range)*100
+    df_day["upper_shadow_pr"] = (df_day["upper_shadow"] / df_day["total_shadow"] )*100
+    df_day["lower_shadow_pr"] = (df_day["lower_shadow"] / df_day["total_shadow"])*100
 
     conditions = [
         np.logical_and(df_day["upper_shadow_pr"] <= 30, df_day["lower_shadow_pr"] >= 70),
@@ -78,6 +78,15 @@ def Get_Main_DataSet():
 
     choices = ["Bullish", "Bearish"]
     df_day['Candle_Signal'] = np.select(conditions, choices, default="Neutral")
+
+    # Previes Day Data
+
+    df_day['Prev_Candle_Signal'] =df_day['Candle_Signal'].shift(1)
+    df_day['Prev_Candle'] = df_day['Candle'].shift(1)
+
+    df_day.drop(['total_shadow','upper_shadow','lower_shadow'], axis=1, inplace=True)
+
+
 
 
     df_day['Datetime'] = pd.to_datetime(df_day['Datetime'])
@@ -93,10 +102,9 @@ def Get_Main_DataSet():
     df['20EMA'] = EMAIndicator(close=df['Close'], window=20, fillna=False).ema_indicator()
     df['50EMA'] = EMAIndicator(close=df['Close'], window=50, fillna=False).ema_indicator()
     df['200EMA'] = EMAIndicator(close=df['Close'], window=200, fillna=False).ema_indicator()
-    df['RSI'] = ta.momentum.RSIIndicator(df['Close'],window=6).rsi()
+    df['RSI'] = ta.momentum.RSIIndicator(df['Close'],window=4).rsi()
     super_trend = pdta.supertrend(high=df['High'], low=df['Low'], close=df['Close'], length=50, multiplier=4)
     df['SuperTrend'] = super_trend['SUPERTd_50_4.0']
-
 
         # SHADOW FIND 
     df_upper_shadow = df['High'] - df[['Close', 'Open']].max(axis=1)
@@ -108,18 +116,12 @@ def Get_Main_DataSet():
     df["lower_shadow_pr"] = (df_lower_shadow / total_range)*100
 
     conditions = [
-        np.logical_and(df["upper_shadow_pr"] <= 30, df["lower_shadow_pr"] >= 70),
+        np.logical_and(df["upper_shadow_pr"] <= 30, df["lower_shadow_pr"] >= 70) ,
         np.logical_and(df["upper_shadow_pr"] >= 70, df["lower_shadow_pr"] <= 30)
     ]
 
     choices = ["Bullish", "Bearish"]
     df['Candle_Signal'] = np.select(conditions, choices, default="Neutral")
-
-
-
-
-
-
 
 
     df.dropna(inplace=True)
