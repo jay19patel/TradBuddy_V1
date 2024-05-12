@@ -4,7 +4,7 @@ import pandas as pd
 from ta.trend import EMAIndicator
 import pandas_ta as pdta
 import ta
-
+import numpy as np
 
 
 fyers_obj = Fyers()
@@ -42,7 +42,7 @@ def FindMinMax(row):
 
 def Get_Main_DataSet():
     index_name = "NSE:NIFTY50-INDEX"
-    time_frame = "1D" # 15 minutes
+    time_frame = "15" # 15 minutes
     days = 1200 # 1 day data 
     df = fyers_obj.Big_Historical_Data(index_name,time_frame,days)
     df_day = fyers_obj.Big_Historical_Data(index_name,"1D",days)
@@ -62,6 +62,23 @@ def Get_Main_DataSet():
     df_day['200EMA'] = EMAIndicator(close=df_day['Close'], window=200, fillna=False).ema_indicator()
     df_day['RSI'] = ta.momentum.RSIIndicator(df_day['Close'],window=6).rsi()
 
+    # SHADOW FIND 
+    df_day_upper_shadow = df_day['High'] - df_day[['Close', 'Open']].max(axis=1)
+    df_day_lower_shadow = df_day[['Close', 'Open']].min(axis=1) - df_day['Low']
+    total_range = df_day_upper_shadow + df_day_lower_shadow
+
+    # Calculate percentage of upper and lower shadows
+    df_day["upper_shadow_pr"] = (df_day_upper_shadow / total_range )*100
+    df_day["lower_shadow_pr"] = (df_day_lower_shadow / total_range)*100
+
+    conditions = [
+        np.logical_and(df_day["upper_shadow_pr"] <= 30, df_day["lower_shadow_pr"] >= 70),
+        np.logical_and(df_day["upper_shadow_pr"] >= 70, df_day["lower_shadow_pr"] <= 30)
+    ]
+
+    choices = ["Bullish", "Bearish"]
+    df_day['Candle_Signal'] = np.select(conditions, choices, default="Neutral")
+
 
     df_day['Datetime'] = pd.to_datetime(df_day['Datetime'])
     df_day['Date'] = df_day['Datetime'].dt.date
@@ -79,6 +96,32 @@ def Get_Main_DataSet():
     df['RSI'] = ta.momentum.RSIIndicator(df['Close'],window=6).rsi()
     super_trend = pdta.supertrend(high=df['High'], low=df['Low'], close=df['Close'], length=50, multiplier=4)
     df['SuperTrend'] = super_trend['SUPERTd_50_4.0']
+
+
+        # SHADOW FIND 
+    df_upper_shadow = df['High'] - df[['Close', 'Open']].max(axis=1)
+    df_lower_shadow = df[['Close', 'Open']].min(axis=1) - df['Low']
+    total_range = df_upper_shadow + df_lower_shadow
+
+    # Calculate percentage of upper and lower shadows
+    df["upper_shadow_pr"] = (df_upper_shadow / total_range )*100
+    df["lower_shadow_pr"] = (df_lower_shadow / total_range)*100
+
+    conditions = [
+        np.logical_and(df["upper_shadow_pr"] <= 30, df["lower_shadow_pr"] >= 70),
+        np.logical_and(df["upper_shadow_pr"] >= 70, df["lower_shadow_pr"] <= 30)
+    ]
+
+    choices = ["Bullish", "Bearish"]
+    df['Candle_Signal'] = np.select(conditions, choices, default="Neutral")
+
+
+
+
+
+
+
+
     df.dropna(inplace=True)
     df[["Small_Swing_Min","Small_Swing_Max"]]=df.apply(FindMinMax, axis=1, result_type='expand')
 
@@ -88,7 +131,7 @@ def Get_Main_DataSet():
     merged_df = df_day.merge(df, on='Day_Date', how='inner')
     merged_df.dropna(inplace=True)
     merged_df.drop(['Day_Datetime'], axis=1, inplace=True)
-    merged_df.to_csv("Jupyter Notebook/MainDataSet1D.csv",index=False)
+    merged_df.to_csv("Jupyter Notebook/MainDataSet15m.csv",index=False)
     print("Backtesing Data Save.")
     # return merged_df
 
