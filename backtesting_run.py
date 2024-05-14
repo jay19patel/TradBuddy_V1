@@ -41,7 +41,7 @@ def FindMinMax(row):
     return min(MinList),max(MaxList)
 
 def Get_Main_DataSet():
-    index_name = "NSE:HDFCBANK-EQ"
+    index_name = "BSE:SENSEX-INDEX"
     time_frame = "15" # 15 minutes
     days = 1200 # 1 day data 
     df = fyers_obj.Big_Historical_Data(index_name,time_frame,days)
@@ -142,7 +142,7 @@ def Get_Main_DataSet():
     merged_df = df_day.merge(df, on='Day_Date', how='inner')
     merged_df.dropna(inplace=True)
     merged_df.drop(['Day_Datetime'], axis=1, inplace=True)
-    merged_df.to_csv("Jupyter Notebook/HDFC15m.csv",index=False)
+    merged_df.to_csv("Jupyter Notebook/Sensex15.csv",index=False)
     print("Backtesing Data Save.")
     # return merged_df
 
