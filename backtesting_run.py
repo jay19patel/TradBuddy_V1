@@ -41,7 +41,7 @@ def FindMinMax(row):
     return min(MinList),max(MaxList)
 
 def Get_Main_DataSet():
-    index_name = "NSE:NIFTY50-INDEX"
+    index_name = "NSE:HDFCBANK-EQ"
     time_frame = "15" # 15 minutes
     days = 1200 # 1 day data 
     df = fyers_obj.Big_Historical_Data(index_name,time_frame,days)
@@ -60,7 +60,7 @@ def Get_Main_DataSet():
     df_day['20EMA'] = EMAIndicator(close=df_day['Close'], window=20, fillna=False).ema_indicator()
     df_day['50EMA'] = EMAIndicator(close=df_day['Close'], window=50, fillna=False).ema_indicator()
     df_day['200EMA'] = EMAIndicator(close=df_day['Close'], window=200, fillna=False).ema_indicator()
-    df_day['RSI'] = ta.momentum.RSIIndicator(df_day['Close'],window=4).rsi()
+    df_day['RSI'] = ta.momentum.RSIIndicator(df_day['Close'],window=6).rsi()
 
     # SHADOW FIND 
     df_day["upper_shadow"] = df_day['High'] - df_day[['Close', 'Open']].max(axis=1)
@@ -94,6 +94,17 @@ def Get_Main_DataSet():
     df_day[['SwingMin', 'SwingMax']] = df_day.apply(FindMinMax, axis=1, result_type='expand')
     df_day = df_day.add_prefix('Day_')
 
+
+
+
+    df['Datetime'] = pd.to_datetime(df['Datetime'])
+    df['Day_Date'] = df['Datetime'].dt.date
+    first_candle_high = df.groupby('Day_Date')['High'].first()
+    first_candle_low = df.groupby('Day_Date')['Low'].first()
+    df['First_Candle_High'] = df['Day_Date'].map(first_candle_high)
+    df['First_Candle_Low'] = df['Day_Date'].map(first_candle_low)
+
+
     df['Pivot'] = df[["High", "Low", "Close"]].mean(axis=1)
     df['Candle'] = df.apply(lambda row: 'Green' if row['Close'] >= row['Open'] else 'Red', axis=1)
     df['CandleBody'] = abs(df['High'] - df['Low'])
@@ -102,7 +113,7 @@ def Get_Main_DataSet():
     df['20EMA'] = EMAIndicator(close=df['Close'], window=20, fillna=False).ema_indicator()
     df['50EMA'] = EMAIndicator(close=df['Close'], window=50, fillna=False).ema_indicator()
     df['200EMA'] = EMAIndicator(close=df['Close'], window=200, fillna=False).ema_indicator()
-    df['RSI'] = ta.momentum.RSIIndicator(df['Close'],window=4).rsi()
+    df['RSI'] = ta.momentum.RSIIndicator(df['Close'],window=6).rsi()
     super_trend = pdta.supertrend(high=df['High'], low=df['Low'], close=df['Close'], length=50, multiplier=4)
     df['SuperTrend'] = super_trend['SUPERTd_50_4.0']
 
@@ -127,13 +138,11 @@ def Get_Main_DataSet():
     df.dropna(inplace=True)
     df[["Small_Swing_Min","Small_Swing_Max"]]=df.apply(FindMinMax, axis=1, result_type='expand')
 
-    df['Datetime'] = pd.to_datetime(df['Datetime'])
-    df['Day_Date'] = df['Datetime'].dt.date
-
+    
     merged_df = df_day.merge(df, on='Day_Date', how='inner')
     merged_df.dropna(inplace=True)
     merged_df.drop(['Day_Datetime'], axis=1, inplace=True)
-    merged_df.to_csv("Jupyter Notebook/MainDataSet15m.csv",index=False)
+    merged_df.to_csv("Jupyter Notebook/HDFC15m.csv",index=False)
     print("Backtesing Data Save.")
     # return merged_df
 
