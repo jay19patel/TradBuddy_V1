@@ -6,14 +6,15 @@ import asyncio
 
 from Algo.Strategys.BaseStategys import strategy_1, strategy_2
 from Utility.TimeSupervisor import market_time_decorator
-
+from Utility.HistoricalData import GetHistoricalDataframe
 logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 async def find_entries(index_data, fyers_obj, TimeFrame):
     try:
-        data = fyers_obj.Historical_Data(index_data[0], TimeFrame)
+        # data = fyers_obj.Historical_Data(index_data[0], TimeFrame)
         # Run strategy_1 and strategy_2 concurrently using asyncio.gather
+        data = GetHistoricalDataframe(fyers_obj,index_data[0],TimeFrame)
         strategy_1_task = strategy_1(data, index_data[1])
         strategy_2_task = strategy_2(data, index_data[1])
         strategy_1_status, strategy_2_status = await asyncio.gather(strategy_1_task, strategy_2_task)

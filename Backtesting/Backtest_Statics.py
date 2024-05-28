@@ -11,7 +11,6 @@ class Backtest:
                                                'BuyDatetime', 'SellPrice', 'SellDatetime','SLValue',
                                                'TargetValue', 'PnL Status','PnL'])
         
-
     def backtest(self, df):
         open_order = None
         TradSide = None

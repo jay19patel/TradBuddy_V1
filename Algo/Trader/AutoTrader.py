@@ -12,6 +12,9 @@ logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level
 
 Strategy_path = f"{os.getcwd()}/Records/strategies_results.json"
 
+
+
+
 # PLACE ORDER
 async def process_order_place(account,Fyers,TradBuddy):
     with open(Strategy_path, 'r') as file:
