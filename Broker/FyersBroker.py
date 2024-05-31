@@ -88,7 +88,8 @@ class Fyers:
 
             with open(file_path, 'w') as file:
                 file.write(access_token)
-            
+        except :
+            print("Error")
         finally:
             logging.info("[ Fyers Access Token  ]")
             driver.quit()

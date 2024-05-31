@@ -49,9 +49,7 @@ def fetch_option_details():
     file_path = f"{os.getcwd()}/Records/sym_details_{current_date}.csv"
     filtered_df.to_csv(file_path, index=False)
     logging.info(f"Option details Successfully saved to {file_path}") 
-
-    
-    
+ 
 # Index pass kare to at the money no symbol mali jay
 def get_option_for(trad_index, trad_side, price,expiry = 0):
     tred_sp = round(price,-2)
@@ -69,7 +67,6 @@ def get_option_for(trad_index, trad_side, price,expiry = 0):
     (option_df["SIDE"] == trad_side) &
     (option_df['INDEX'] == trad_index)
     ]
-
 
     if final_data.shape[0] == 0:
         logging.info("Filter Datatable is Not available Some this wrong ")
@@ -89,3 +86,4 @@ def todays_expiry():
     final_data = option_df[option_df["EXDATETIME"] == datetime.now().date()]
     print(" Expiry Indexs",final_data["INDEX"].unique())
     return final_data["INDEX"].unique().tolist()
+

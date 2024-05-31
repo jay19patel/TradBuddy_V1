@@ -1,11 +1,18 @@
 
+from Broker.FyersBroker import Fyers
 
-from MicroScripts.AdjustmentTheory.app import save_expiry_index_price_after_3_pm
+from MicroScripts.DailyStacks.Main import get_overview
 
 
-save_expiry_index_price_after_3_pm()
-import schedule
-import time
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+fyers_obj = Fyers()
+fyers_obj.authentication()
+
+
+
+get_overview(fyers_obj.fyers_instance)
+
+
+# fyers_obj
+
+
+
