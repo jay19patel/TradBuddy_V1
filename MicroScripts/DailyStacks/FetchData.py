@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 import json
-
+import time
 
 def GetNseData(url):
     headers = {
@@ -67,16 +67,20 @@ def FiiDii():
 
 
 def AdvancesDecline():
-    IndexNameList = ["NIFTY%2050", "NIFTY%20BANK"]
+    IndexNameList = ["NIFTY%20BANK","NIFTY%2050"]
+    # IndexNameList = ["NIFTY%2050"]
     adv_dec_data = {}
     for index_name in IndexNameList:
         datarow = GetNseData(f"https://www.nseindia.com/api/equity-stockIndices?index={index_name}")
+        time.sleep(3)
         data = dict(datarow)
         market_status = data['advance']
         df = pd.DataFrame(data['data'])
         listofcolumns = ['symbol', 'pChange']
         df = df[listofcolumns].sort_values(by='pChange')
         adv_dec_data[index_name] = df.to_dict(orient='records')
-        adv_dec_data["advance"] = market_status
+        adv_dec_data[f"{index_name}_advance"] = market_status
+
+
     return adv_dec_data
 

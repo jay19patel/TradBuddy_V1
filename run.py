@@ -16,18 +16,23 @@ if __name__ == '__main__':
     # StrategyManagerExecution(fyers_obj)
     # run_worker(fyers_obj,tb_obj)
     
+    # try:
 
-    thread1 = threading.Thread(target=StrategyManagerExecution, args=(fyers_obj,))
-    thread2 = threading.Thread(target=run_worker, args=(fyers_obj, tb_obj))
-    thread3 = threading.Thread(target=get_overview, args=(fyers_obj.fyers_instance))
+        # thread1 = threading.Thread(target=StrategyManagerExecution, args=(fyers_obj,))
+        # thread2 = threading.Thread(target=run_worker, args=(fyers_obj, tb_obj))
+        # thread3 = threading.Thread(target=get_overview, args=(fyers_obj.fyers_instance))
 
-    thread1.start()
-    thread2.start()
-    thread3.start()
+        # thread1.start()
+        # thread2.start()
+        # thread3.start()
 
-    thread1.join()
-    thread2.join()
-    thread3.join()
+        # thread1.join()
+        # thread2.join()
+        # thread3.join()
+
+    get_overview(fyers_obj.fyers_instance)
+    # except:
+    #     print("Error in Main Exection",Exception)
 
 
     while True:

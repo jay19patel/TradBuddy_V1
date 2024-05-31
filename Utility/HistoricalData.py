@@ -46,8 +46,8 @@ def GetHistoricalDataframe(fyers_obj,index_name,time_frame):
     # df_day.drop(columns=['Volume'], inplace=True)
 
     super_trend = pdta.supertrend(high=df_day['High'], low=df_day['Low'], close=df_day['Close'], length=50, multiplier=4)
-
     df_day['SuperTrend'] = super_trend['SUPERTd_50_4.0']
+
     df_day['Candle'] = df_day.apply(lambda row: 'Green' if row['Close'] >= row['Open'] else 'Red', axis=1)
     df_day['CandleBody'] = abs(df_day['High'] - df_day['Low'])
     df_day['5EMA'] = EMAIndicator(close=df_day['Close'], window=5, fillna=False).ema_indicator()
@@ -79,7 +79,6 @@ def GetHistoricalDataframe(fyers_obj,index_name,time_frame):
 
     df_day['Prev_Candle_Signal'] =df_day['Candle_Signal'].shift(1)
     df_day['Prev_Candle'] = df_day['Candle'].shift(1)
-    df_day.drop(['total_shadow','upper_shadow','lower_shadow'], axis=1, inplace=True)
     df_day['Datetime'] = pd.to_datetime(df_day['Datetime'])
     df_day['Date'] = df_day['Datetime'].dt.date
     df_day[['SwingMin', 'SwingMax']] = df_day.apply(FindMinMax, axis=1, result_type='expand')
