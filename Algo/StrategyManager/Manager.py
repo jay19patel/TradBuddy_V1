@@ -11,9 +11,7 @@ logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level
 
 
 async def find_entries(index_data, fyers_obj, TimeFrame):
-    # try:
-        # data = fyers_obj.Historical_Data(index_data[0], TimeFrame)
-        # Run strategy_1 and strategy_2 concurrently using asyncio.gather
+    try:
         data = GetHistoricalDataframe(fyers_obj,index_data[0],TimeFrame)
         strategy_1_task = strategy_1(data, index_data[1])
         strategy_2_task = strategy_2(data, index_data[1])
@@ -25,11 +23,11 @@ async def find_entries(index_data, fyers_obj, TimeFrame):
             "price": index_data[1],
             "updated_datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-    # except Exception as e:
-    #     error_msg = f"Error occurred while processing {index_data[0]}: {e}"
-    #     print(error_msg)
-    #     logging.error(error_msg)
-    #     return []
+    except Exception as e:
+        error_msg = f"Error occurred while processing {index_data[0]}: {e}"
+        print(error_msg)
+        logging.error(error_msg)
+        return []
 
 
 async def store_strategy_statuses(fyers_obj):   

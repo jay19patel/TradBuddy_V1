@@ -16,14 +16,16 @@ logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level
 
 def fetch_option_details():
     logging.info("Fetching new Option details from Online")
-    spotnames = ['BANKNIFTY', 'FINNIFTY', 'NIFTY', 'SENSEX', 'BANKEX'] 
-    nse_fetch = requests.get('https://public.fyers.in/sym_details/NSE_FO.csv')
-    bse_fetch = requests.get('https://public.fyers.in/sym_details/BSE_FO.csv')
+    # spotnames = ['BANKNIFTY', 'FINNIFTY', 'NIFTY', 'SENSEX', 'BANKEX'] 
+    spotnames = ['BANKNIFTY','NIFTY'] 
+    row_df = requests.get('https://public.fyers.in/sym_details/NSE_FO.csv')
+    # nse_fetch = requests.get('https://public.fyers.in/sym_details/NSE_FO.csv')
+    # bse_fetch = requests.get('https://public.fyers.in/sym_details/BSE_FO.csv')
 
-    nse_df = pd.read_csv(io.StringIO(nse_fetch.text), header=None)
-    bse_df = pd.read_csv(io.StringIO(bse_fetch.text), header=None)
+    # nse_df = pd.read_csv(io.StringIO(nse_fetch.text), header=None)
+    # bse_df = pd.read_csv(io.StringIO(bse_fetch.text), header=None)
 
-    row_df = pd.concat([nse_df, bse_df])
+    # row_df = pd.concat([nse_df, bse_df])
     row_df = row_df[[0,1,3,8,9,13,15,16]]
     column_names = ["ID", "INDEX INFO", "LOT", "TIMESTAMP", "SYMBOL", "INDEX", "STRIKE PRICE", "SIDE"]
     row_df.columns = column_names
@@ -52,6 +54,7 @@ def fetch_option_details():
  
 # Index pass kare to at the money no symbol mali jay
 def get_option_for(trad_index, trad_side, price,expiry = 0):
+    print("INDEX NAME:",trad_index)
     tred_sp = round(price,-2)
     current_date = datetime.now().strftime('%Y-%m-%d')
     file_path = f"{os.getcwd()}/Records/sym_details_{current_date}.csv"

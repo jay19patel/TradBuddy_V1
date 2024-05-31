@@ -8,21 +8,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import logging
-logging.basicConfig(filename=f"{os.getcwd()}/Records/MicroScripts.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 
 
-# db_client = os.getenv("MONGODB_STRING")
-# verion = 2
-# mongo_connection = pymongo.MongoClient(db_client)[f'TradBuddy_V{verion}_Worker_1']
-# dayly_stacks = mongo_connection["DailyStacks"]
+db_client = os.getenv("MONGODB_STRING")
+verion = 2
+mongo_connection = pymongo.MongoClient(db_client)[f'TradBuddy_V{verion}_Worker_1']
+dayly_stacks = mongo_connection["DailyStacks"]
 
 
 
 # @market_time_decorator(Open_time = "9:15",Close_time = "23:15",market_status="Open",Interval = 60)
 def get_overview(fyers_obj):
-    # try:
+    try:
         option_chain_data = OptionChain(fyers_obj)
         fii_dii_data = FiiDii()
         advances_decline_data = AdvancesDecline()
@@ -36,7 +36,7 @@ def get_overview(fyers_obj):
         # dayly_stacks.insert_one(dict_data)
         with open(os.path.join(os.getcwd(), "Records", "get_overview.json"), "w") as json_file:
             json.dump(dict_data, json_file, indent=5)
-    # except Exception as e:
-    #     logging.warning(f"Some thing Wrong in Microscript Daily Stacks at {e}")
+    except Exception as e:
+        logging.warning(f"Some thing Wrong in Microscript Daily Stacks at {e}")
 
     # return dict_data
