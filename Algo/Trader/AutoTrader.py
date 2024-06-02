@@ -87,6 +87,7 @@ async def worker(Fyers,TradBuddy):
     try:
         # ORDER PLACE ----------------------------
         accounts = TradBuddy.account_list({"is_activate":"Activate"})
+        print(accounts)
         await asyncio.gather(*(process_order_place(account,Fyers,TradBuddy) for account in accounts))
 
         # ORDER CANCEL ----------------------------
@@ -104,7 +105,7 @@ async def worker(Fyers,TradBuddy):
 
 
 from Utility.TimeSupervisor import market_time_decorator
-@market_time_decorator(Open_time = "9:15",Close_time = "23:40",market_status="Open",Interval = 10)
+@market_time_decorator(Open_time = "9:15",Close_time = "23:59",market_status="Open",Interval = 10)
 def run_worker(Fyers,TradBuddy):
     asyncio.run(worker(Fyers,TradBuddy))
 

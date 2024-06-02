@@ -46,7 +46,7 @@ class TradBuddyBroker:
             account_id = f"ACC-{str(self.account_collection.count_documents({}) + 1).zfill(3)}"
             accountSchema = {
                     "account_id": account_id,
-                    "account_balance": data.get("account_balance", float(0)),
+                    "account_balance": data.get("account_balance") or 100000,
                     "is_activate": data.get("is_activate", True),
                     "strategy": data.get("strategy", {}),
                     "max_trad_per_day": data.get("max_trad_per_day", 10),
@@ -67,7 +67,7 @@ class TradBuddyBroker:
             self.account_collection.insert_one(accountSchema)
             return {
                 "message": f"account_create [{account_id}]: success - Account created successfully.",
-                "body": None,
+                "body": account_id,
                 "status": "Ok"
             }
         except Exception as e:
@@ -116,8 +116,8 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
         
-    def account_list(self,query):
-        result = self.account_collection.find(query)
+    def account_list(self):
+        result = self.account_collection.find({})
         if result:
             return list(result)
         return []
