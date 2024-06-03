@@ -45,7 +45,7 @@ def login():
 
 @app.context_processor
 def inject_accounts():
-    list_data = tb_broker.account_list()
+    list_data = tb_broker.account_list(query={})
     # list_data = []
     if "message" in list_data:
         flash("Please Relogin","error")

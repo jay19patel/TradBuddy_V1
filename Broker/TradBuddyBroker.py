@@ -116,8 +116,8 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
         
-    def account_list(self):
-        result = self.account_collection.find({})
+    def account_list(self,query):
+        result = self.account_collection.find(query)
         if result:
             return list(result)
         return []

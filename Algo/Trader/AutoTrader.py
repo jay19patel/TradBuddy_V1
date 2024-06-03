@@ -17,6 +17,7 @@ Strategy_path = f"{os.getcwd()}/Records/strategies_results.json"
 
 # PLACE ORDER
 async def process_order_place(account,Fyers,TradBuddy):
+
     with open(Strategy_path, 'r') as file:
         if file.read().strip() == "":
             logging.info("No Found Strategy JSON file.")
@@ -24,17 +25,18 @@ async def process_order_place(account,Fyers,TradBuddy):
         else:
             file.seek(0)
             strategies_results = json.load(file)
-
         try:
             account_number = account["account_id"]
             tasks = []
-            for symbol, strategy_key in account["strategys"]:
-                status = strategies_results.get(symbol, {}).get(strategy_key,"None")
-                price = strategies_results.get(symbol, {}).get("price")
-                is_already = TradBuddy.order_get({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
-                if status != "None" and len(is_already) <= 0 :
-                    print(f"+----------------Buy[{symbol}]------------------+")
-                    tasks.append(PlaceOrder(account_number, strategy_key, symbol, status,price,Fyers,TradBuddy))
+            print(account["strategy"],"strategy")
+            for strategy_key in account["strategy"]:
+                for symbol in account["strategy"][strategy_key]:
+                    status = strategies_results.get(symbol, {}).get(strategy_key,"None")
+                    price = strategies_results.get(symbol, {}).get("price")
+                    is_already = TradBuddy.order_get({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
+                    if status != "None" and len(is_already) <= 0 :
+                        print(f"+----------------Buy[{symbol}]------------------+")
+                        tasks.append(PlaceOrder(8, strategy_key, symbol, status,price,Fyers,TradBuddy))
             await asyncio.gather(*tasks)
         except Exception as e:
             logging.error(f"Error in [process_order_place] : {e}")
@@ -87,7 +89,6 @@ async def worker(Fyers,TradBuddy):
     try:
         # ORDER PLACE ----------------------------
         accounts = TradBuddy.account_list({"is_activate":"Activate"})
-        print(accounts)
         await asyncio.gather(*(process_order_place(account,Fyers,TradBuddy) for account in accounts))
 
         # ORDER CANCEL ----------------------------
