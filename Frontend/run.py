@@ -210,28 +210,19 @@ def AccountDashbord(account):
 
     SummryData = tb_broker.generate_report(account)
 
-    # print("OpenTrades----------------------------------------------")
-    # print(OpenTrades)
-    # print("CloseTrades---------------------------------------------")
-    # print(CloseTrades)
+    data = tb_broker.perform_analysis(account)['body']
+    scorebords = [("Trades", data['Total Trades']), 
+                  ("Open/Close", f"{data['Open Trades']}/{data['Closed Trades']}"),
+                  ("Positive/Nagative", f"{data['Positive Trades']}/{data['Nagative Trades']}"),
+                  ("Win Rate", data['Win Ratio']), 
+                  ("Grow", data['Total PnL']), 
+                  ("Account Balance", tb_broker.account_get(account)['body']['account_balance'])]
+ 
 
 
-#     OpenTrades = [
-#     {'ID': 1, 'Symbol': 'AAPL', 'Buy Price': 150.25, 'SL Price': 155.50, 'Target Price': 500, 'Buy Datetime': '2024-04-15 10:00:00', 'Sell Datetime': '2024-04-15 12:00:00', 'Qnty': 100},
-#     {'ID': 2, 'Symbol': 'GOOGL', 'Buy Price': 2500.75, 'SL Price': 2520.80, 'Target Price': 2000, 'Buy Datetime': '2024-04-15 11:00:00', 'Sell Datetime': '2024-04-15 13:00:00', 'Qnty': 50}
-# ]
-#     CloseTrades = [
-#     {'ID': 3, 'Symbol': 'MSFT', 'Buy Price': 300.50, 'Sell Price': 295.25, 'PnL': -700, 'Buy Datetime': '2024-04-15 09:30:00', 'Sell Datetime': '2024-04-15 11:30:00', 'Qnty': 150},
-#     {'ID': 4, 'Symbol': 'AMZN', 'Buy Price': 3500.25, 'Sell Price': 3550.80, 'PnL': 3000, 'Buy Datetime': '2024-04-15 10:30:00', 'Sell Datetime': '2024-04-15 12:30:00', 'Qnty': 40}
-# ]
-
-    print(SummryData['body'])
-
-    SummryData = [{'CE_Amount_Loss': 0.0, 'CE_Amount_Profit': 0.0, 'CE_Loss': 0.0, 'CE_Profit': 0.0, 'PE_Amount_Loss': 0.0, 'PE_Amount_Profit': 0.0, 'PE_Loss': 0.0, 'PE_Profit': 0.0, 'Total_Tred': 0.0, 'Total_Tred_Amount': 0.0, 'trad_index': 'Over All'}]
-   
-    scorebords = [("Trades",0),("Open/Close",0),("Positive/Nagative ",0),("Win Rate",0),("Grow",0),("Account Balance",10000)]
+    # scorebords = [("Trades",0),("Open/Close",0),("Positive/Nagative ",0),("Win Rate",0),("Grow",0),("Account Balance",10000)]
     
-    return render_template('Pages/accountDashbord.html',OpenTrades=OpenTrades,CloseTrades=CloseTrades,SummryData=SummryData,scorebords=scorebords)
+    return render_template('Pages/accountDashbord.html',OpenTrades=OpenTrades,CloseTrades=CloseTrades,SummryData=SummryData['body'],scorebords=scorebords)
 
 
 @app.route('/update_trad')
@@ -256,43 +247,10 @@ def Notification():
 @app.route('/account_tradbook/<account>')
 @login_required
 def AccountTradbook(account):
-    tradbook = [
-    {
-        'Date': '2024-04-15',
-        'ID': '1',
-        'Symbol': 'AAPL',
-        'Buy Price': '$150',
-        'Sell Price': '$160',
-        'PnL': -250,
-        'Buy Datetime': '2024-04-01 09:00:00',
-        'Sell Datetime': '2024-04-15 15:00:00',
-        'Quantity': '10'
-    },
-    {
-        'Date': '2024-04-14',
-        'ID': '2',
-        'Symbol': 'GOOGL',
-        'Buy Price': '$2500',
-        'Sell Price': '$2600',
-        'PnL': 500,
-        'Buy Datetime': '2024-04-01 10:00:00',
-        'Sell Datetime': '2024-04-14 14:00:00',
-        'Quantity': '5'
-    },
-    {
-        'Date': '2024-04-13',
-        'ID': '3',
-        'Symbol': 'MSFT',
-        'Buy Price': '$200',
-        'Sell Price': '$220',
-        'PnL': 200,
-        'Buy Datetime': '2024-04-01 11:00:00',
-        'Sell Datetime': '2024-04-13 13:00:00',
-        'Quantity': '8'
-    }
-]
 
-    return render_template('Pages/accountTradbook.html',tradbook=tradbook)
+    tradbook = tb_broker.order_book(account)
+
+    return render_template('Pages/accountTradbook.html',tradbook=tradbook['body'])
 
 
 

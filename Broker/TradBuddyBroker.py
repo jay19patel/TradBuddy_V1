@@ -345,7 +345,7 @@ class TradBuddyBroker:
 
     def orders_today(self):
         try:
-            order_book = self.orders_collection.find({"trad_status": "Open"})
+            order_book = self.orders_collection.find({"trad_status": "Close"})
             return list(order_book)
         except:
             return None
@@ -359,11 +359,10 @@ class TradBuddyBroker:
 
     def order_book(self, account_id):
         try:
-            order_book = self.orders_collection.find_one({"account_id": account_id})
-            del order_book["_id"]
+            order_book = self.orders_collection.find({"account_id": account_id,"trad_status": "Close"})
             return {
                 "message": "order_book: success - Order book retrieved successfully.",
-                "body": order_book,
+                "body": list(order_book),
                 "status": "Ok"
             }
         except Exception as e:
@@ -425,18 +424,23 @@ class TradBuddyBroker:
             total_open_list = alldf[alldf["trad_status"] == "Open"]
             total_close_list = alldf[alldf["trad_status"] == "Close"]
 
+            total_positive_list = alldf[alldf["pnl"] > 0].shape[0]
+            total_nagative_list = alldf[alldf["pnl"] <= 0].shape[0]
+
+
             closed_trades = total_close_list.shape[0]
             open_trades = total_open_list.shape[0]
             total_pnl = sum(total_close_list["pnl"])
-            pnl_per_trade = total_pnl / closed_trades if closed_trades > 0 else 0
+
             win_ratio = (total_close_list[total_close_list["pnl"] > 0].shape[0] / closed_trades) * 100 if closed_trades > 0 else 0
 
             analysis = {
                 "Total Trades": total_trades,
                 "Closed Trades": closed_trades,
                 "Open Trades": open_trades,
+                "Positive Trades":total_positive_list,
+                "Nagative Trades":total_nagative_list,
                 "Total PnL": total_pnl,
-                "PnL per trade": pnl_per_trade,
                 "Win Ratio": win_ratio
             }
 

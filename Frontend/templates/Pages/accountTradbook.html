@@ -25,47 +25,48 @@
   </thead>
   <tbody>
     {% if tradbook %}
+    {{tradbook}}
     {% for trade in tradbook %}
     <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10" id="tradeRow{{ trade['ID'] }}">
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Date</span>
-        {{ trade['Date'] }}
+        {{ trade['date'] }}
       </td>
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">ID</span>
-        {{ trade['ID'] }}
+        {{ trade['order_id'] }}
       </td>
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Symbol</span>
-        {{ trade['Symbol'] }}
+        {{ trade['option_symbol'] }}
       </td>
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Buy Price</span>
-        {{ trade['Buy Price'] }}
+        {{ trade['buy_price'] }}
       </td>
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Sell Price</span>
-        {{ trade['Sell Price'] }}
+        {{ trade['sel_price'] }}
       </td>
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">PNL</span>
-        {% if  trade['PnL'] >= 0 %}
-        <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ trade['PnL'] }}</span>
+        {% if  trade['pnl'] >= 0 %}
+        <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ trade['pnl'] }}</span>
         {% else %}
-        <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ trade['PnL'] }}</span>
+        <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ trade['pnl'] }}</span>
         {% endif %}
       </td>
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Buy Datetime</span>
-        {{ trade['Buy Datetime'] }}
+        {{ trade['buy_datetime'] }}
       </td>
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Sell Datetime</span>
-        {{ trade['Sell Datetime'] }}
+        {{ trade['sell_datetime'] }}
       </td>
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Quantity</span>
-        {{ trade['Quantity'] }}
+        {{ trade['qnty'] }}
       </td>
     </tr>
     {% endfor %}
