@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Algo Logs{% endblock %}
+{% block content %}
+<div class="log-container bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+    <h1>Log File Contents</h1>
+    <pre class="log-content">
+    {{ log_content | safe }}
+    </pre>
+</div>
+{% endblock %}

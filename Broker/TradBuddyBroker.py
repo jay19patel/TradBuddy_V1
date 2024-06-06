@@ -47,6 +47,7 @@ class TradBuddyBroker:
             accountSchema = {
                     "account_id": account_id,
                     "account_balance": data.get("account_balance") or 100000,
+                    "account_initial_balance": data.get("account_balance") or 100000,
                     "is_activate": data.get("is_activate", True),
                     "strategy": data.get("strategy", {}),
                     "max_trad_per_day": data.get("max_trad_per_day", 10),
@@ -194,7 +195,6 @@ class TradBuddyBroker:
             transaction_id = create_uuid("ACC-TRAN")
             transaction_schema = {
                 "transaction_id": transaction_id,
-                "profile_id": self.profile_id,
                 "account_id": account_id,
                 "type": transaction_type.capitalize(),
                 "amount": amount,
@@ -209,13 +209,13 @@ class TradBuddyBroker:
                 "status": "Ok"
             }
         
-    def account_transaction_view(self,account_id):
+    def account_transactions(self,query):
         try:
-            account_data = self.account_collection.find({"profile_id": self.profile_id, "account_id": account_id})
-            del account_data["_id"]
+            account_data = self.transactions_collection.find(query)
+            # del account_data["_id"]
             return {
                 "message": "account_transactions: sucess.",
-                "body": account_data,
+                "body": list(account_data),
                 "status": 200
             }
         except Exception as e:

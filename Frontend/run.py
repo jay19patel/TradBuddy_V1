@@ -59,12 +59,32 @@ def inject_accounts():
 def home():
     return render_template('Pages/home.html')
 
+
+@app.route('/profile')
+@login_required
+def Profile():
+    AccountData = tb_broker.account_list({})
+
+    return render_template('Pages/accountProfile.html' ,AccountsDetails=AccountData)
+
+
 @app.route('/logout')
 @login_required
 def logout():
     session.pop('username', None)
     session.pop('profile_id', None)
     return redirect(url_for('login'))
+
+
+@app.route('/logs')
+@login_required
+def logs():
+
+    with open('Records/StrategyManager.log', 'r') as file:
+        log_content = file.read()
+
+    return render_template('Pages/logs.html', log_content=log_content)
+
 
 
 @app.route('/add_account' ,methods=['GET', 'POST'])
@@ -208,35 +228,7 @@ def AccountDashbord(account):
     print(SummryData['body'])
 
     SummryData = [{'CE_Amount_Loss': 0.0, 'CE_Amount_Profit': 0.0, 'CE_Loss': 0.0, 'CE_Profit': 0.0, 'PE_Amount_Loss': 0.0, 'PE_Amount_Profit': 0.0, 'PE_Loss': 0.0, 'PE_Profit': 0.0, 'Total_Tred': 0.0, 'Total_Tred_Amount': 0.0, 'trad_index': 'Over All'}]
-    # SummryData = [
-    #         {
-    #             "INDEX": 1,
-    #             "CE_Profit": 100,
-    #             "CE_Amount_Profit": 200,
-    #             "PE_Profit": 150,
-    #             "PE_Amount_Profit": 250,
-    #             "CE_Loss": 50,
-    #             "CE_Amount_Loss": 100,
-    #             "PE_Loss": 75,
-    #             "PE_Amount_Loss": 125,
-    #             "Total_Tred": 200,
-    #             "Total_Tred_Amount": 400
-    #         },
-    #         {
-    #             "INDEX": 2,
-    #             "CE_Profit": 120,
-    #             "CE_Amount_Profit": 220,
-    #             "PE_Profit": 160,
-    #             "PE_Amount_Profit": 270,
-    #             "CE_Loss": 60,
-    #             "CE_Amount_Loss": 110,
-    #             "PE_Loss": 80,
-    #             "PE_Amount_Loss": 130,
-    #             "Total_Tred": 220,
-    #             "Total_Tred_Amount": 420
-    #         }
-    #     ]
-    
+   
     scorebords = [("Trades",0),("Open/Close",0),("Positive/Nagative ",0),("Win Rate",0),("Grow",0),("Account Balance",10000)]
     
     return render_template('Pages/accountDashbord.html',OpenTrades=OpenTrades,CloseTrades=CloseTrades,SummryData=SummryData,scorebords=scorebords)

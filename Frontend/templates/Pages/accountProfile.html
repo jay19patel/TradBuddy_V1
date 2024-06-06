@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}  Accounts Profile {% endblock %}
+{% block content %}
+
+<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2 scroll">
+    <h1 class="p-4 pb-8 text-xl text-center"> Portfolio </h1>
+    <table class="border-collapse w-full">
+        <thead>
+          <tr>
+            {% for tablecol in ["Account ID","Initial Amount","Current Amount","Gain Amount" ,"Gain in %","Activate Status","Description"]%}
+              <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
+                {{ tablecol }}
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% if AccountsDetails %}
+          {% for Account in AccountsDetails %}
+            <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10">
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">ID</span>
+                {{ Account['account_id'] }}
+              </td>
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Symbol</span>
+                {{ Account['account_initial_balance']}}
+              </td>
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Buy Price</span>
+                {{ Account['account_balance'] }}
+              </td>
+
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Buy Price</span>
+                {{ Account['account_initial_balance']-Account['account_balance'] }}
+              </td>
+
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">PNL</span>
+                {% if  Account['account_initial_balance']-Account['account_balance']>= 0 %}
+                <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ (Account['account_balance']*100)/Account['account_initial_balance'] }}%</span>
+                {% else %}
+                <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ (Account['account_balance']*100)/Account['account_initial_balance'] }}%</span>
+                {% endif %}
+              </td>
+             
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">SL Price</span>
+                {{ Account['is_activate'] }}
+              </td>
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Target Price</span>
+                {{ Account['description'] }}
+              </td>
+            
+            </tr>
+          {% endfor %}
+          {% else %}
+          <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10">
+            <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static" colspan="8">
+              <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">ID</span>
+              <div class="flex justify-center">
+                <span>----- No data available. -----</span>
+              </div>
+            </td>
+          </tr>
+          {% endif %}
+          
+        </tbody>
+      </table>
+    
+</div>
+
+
+{% endblock %}
