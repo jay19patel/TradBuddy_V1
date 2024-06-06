@@ -343,9 +343,7 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-
-        
-    def order_opens(self):
+    def orders_today(self):
         try:
             order_book = self.orders_collection.find({"trad_status": "Open"})
             return list(order_book)
@@ -377,8 +375,8 @@ class TradBuddyBroker:
 
     def generate_report(self, account_id):
         try:
-            order_book = self.orders_collection.find({"account_id": account_id, "trad_status": "Close"})
-            if order_book:
+            order_book = list(self.orders_collection.find({"account_id": account_id, "trad_status": "Open"}))
+            if len(order_book) > 0:
                 df = pd.DataFrame(order_book)
                 count_df_group = df.groupby(['trad_index', 'trad_side', 'pnl_status']).size().reset_index(name='Total Trades')
                 count_df = count_df_group.pivot_table(index='trad_index', columns=['trad_side', 'pnl_status'], values='Total Trades', aggfunc='sum', fill_value=0)

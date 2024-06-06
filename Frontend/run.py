@@ -183,43 +183,59 @@ def AccountDelete(account):
 @login_required
 def AccountDashbord(account):
 
-    OpenTrades = [
-    {'ID': 1, 'Symbol': 'AAPL', 'Buy Price': 150.25, 'SL Price': 155.50, 'Target Price': 500, 'Buy Datetime': '2024-04-15 10:00:00', 'Sell Datetime': '2024-04-15 12:00:00', 'Qnty': 100},
-    {'ID': 2, 'Symbol': 'GOOGL', 'Buy Price': 2500.75, 'SL Price': 2520.80, 'Target Price': 2000, 'Buy Datetime': '2024-04-15 11:00:00', 'Sell Datetime': '2024-04-15 13:00:00', 'Qnty': 50}
-]
-    CloseTrades = [
-    {'ID': 3, 'Symbol': 'MSFT', 'Buy Price': 300.50, 'Sell Price': 295.25, 'PnL': -700, 'Buy Datetime': '2024-04-15 09:30:00', 'Sell Datetime': '2024-04-15 11:30:00', 'Qnty': 150},
-    {'ID': 4, 'Symbol': 'AMZN', 'Buy Price': 3500.25, 'Sell Price': 3550.80, 'PnL': 3000, 'Buy Datetime': '2024-04-15 10:30:00', 'Sell Datetime': '2024-04-15 12:30:00', 'Qnty': 40}
-]
+    # print({"trad_status":"Close","date":datetime.today().strftime("%d-%m-%Y")})
 
-    SummryData = [
-            {
-                "INDEX": 1,
-                "CE_Profit": 100,
-                "CE_Amount_Profit": 200,
-                "PE_Profit": 150,
-                "PE_Amount_Profit": 250,
-                "CE_Loss": 50,
-                "CE_Amount_Loss": 100,
-                "PE_Loss": 75,
-                "PE_Amount_Loss": 125,
-                "Total_Tred": 200,
-                "Total_Tred_Amount": 400
-            },
-            {
-                "INDEX": 2,
-                "CE_Profit": 120,
-                "CE_Amount_Profit": 220,
-                "PE_Profit": 160,
-                "PE_Amount_Profit": 270,
-                "CE_Loss": 60,
-                "CE_Amount_Loss": 110,
-                "PE_Loss": 80,
-                "PE_Amount_Loss": 130,
-                "Total_Tred": 220,
-                "Total_Tred_Amount": 420
-            }
-        ]
+    OpenTrades = tb_broker.order_get({"trad_status":"Open"})
+    CloseTrades = tb_broker.order_get({"trad_status":"Close","date":datetime.today().strftime("%d-%m-%Y")})
+
+    SummryData = tb_broker.generate_report(account)
+
+    # print("OpenTrades----------------------------------------------")
+    # print(OpenTrades)
+    # print("CloseTrades---------------------------------------------")
+    # print(CloseTrades)
+
+
+#     OpenTrades = [
+#     {'ID': 1, 'Symbol': 'AAPL', 'Buy Price': 150.25, 'SL Price': 155.50, 'Target Price': 500, 'Buy Datetime': '2024-04-15 10:00:00', 'Sell Datetime': '2024-04-15 12:00:00', 'Qnty': 100},
+#     {'ID': 2, 'Symbol': 'GOOGL', 'Buy Price': 2500.75, 'SL Price': 2520.80, 'Target Price': 2000, 'Buy Datetime': '2024-04-15 11:00:00', 'Sell Datetime': '2024-04-15 13:00:00', 'Qnty': 50}
+# ]
+#     CloseTrades = [
+#     {'ID': 3, 'Symbol': 'MSFT', 'Buy Price': 300.50, 'Sell Price': 295.25, 'PnL': -700, 'Buy Datetime': '2024-04-15 09:30:00', 'Sell Datetime': '2024-04-15 11:30:00', 'Qnty': 150},
+#     {'ID': 4, 'Symbol': 'AMZN', 'Buy Price': 3500.25, 'Sell Price': 3550.80, 'PnL': 3000, 'Buy Datetime': '2024-04-15 10:30:00', 'Sell Datetime': '2024-04-15 12:30:00', 'Qnty': 40}
+# ]
+
+    print(SummryData['body'])
+
+    SummryData = [{'CE_Amount_Loss': 0.0, 'CE_Amount_Profit': 0.0, 'CE_Loss': 0.0, 'CE_Profit': 0.0, 'PE_Amount_Loss': 0.0, 'PE_Amount_Profit': 0.0, 'PE_Loss': 0.0, 'PE_Profit': 0.0, 'Total_Tred': 0.0, 'Total_Tred_Amount': 0.0, 'trad_index': 'Over All'}]
+    # SummryData = [
+    #         {
+    #             "INDEX": 1,
+    #             "CE_Profit": 100,
+    #             "CE_Amount_Profit": 200,
+    #             "PE_Profit": 150,
+    #             "PE_Amount_Profit": 250,
+    #             "CE_Loss": 50,
+    #             "CE_Amount_Loss": 100,
+    #             "PE_Loss": 75,
+    #             "PE_Amount_Loss": 125,
+    #             "Total_Tred": 200,
+    #             "Total_Tred_Amount": 400
+    #         },
+    #         {
+    #             "INDEX": 2,
+    #             "CE_Profit": 120,
+    #             "CE_Amount_Profit": 220,
+    #             "PE_Profit": 160,
+    #             "PE_Amount_Profit": 270,
+    #             "CE_Loss": 60,
+    #             "CE_Amount_Loss": 110,
+    #             "PE_Loss": 80,
+    #             "PE_Amount_Loss": 130,
+    #             "Total_Tred": 220,
+    #             "Total_Tred_Amount": 420
+    #         }
+    #     ]
     
     scorebords = [("Trades",0),("Open/Close",0),("Positive/Nagative ",0),("Win Rate",0),("Grow",0),("Account Balance",10000)]
     

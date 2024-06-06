@@ -36,7 +36,7 @@ async def process_order_place(account,Fyers,TradBuddy):
                     is_already = TradBuddy.order_get({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
                     if status != "None" and len(is_already) <= 0 :
                         print(f"+----------------Buy[{symbol}]------------------+")
-                        tasks.append(PlaceOrder(8, strategy_key, symbol, status,price,Fyers,TradBuddy))
+                        tasks.append(PlaceOrder(account_number, strategy_key, symbol, status,price,Fyers,TradBuddy))
             await asyncio.gather(*tasks)
         except Exception as e:
             logging.error(f"Error in [process_order_place] : {e}")
