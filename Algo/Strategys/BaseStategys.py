@@ -1,7 +1,8 @@
 import random
 import time
 import asyncio
-
+import numpy as np
+import pandas as pd
 async def strategy_1(df, current_price):
     # Dummmy Random Trad for Testing
     await asyncio.sleep(2)
