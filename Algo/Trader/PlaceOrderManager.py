@@ -47,6 +47,6 @@ async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price
         target_price = current_option_tg,
         notes = "Test"        
     )
-    logging.info(f" Order Placed : {order_place_status}")
+    logging.info(f" Order Placed : {order_place_status, option_symbol}")
     
     

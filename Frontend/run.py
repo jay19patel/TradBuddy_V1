@@ -205,8 +205,8 @@ def AccountDashbord(account):
 
     # print({"trad_status":"Close","date":datetime.today().strftime("%d-%m-%Y")})
 
-    OpenTrades = tb_broker.order_get({"trad_status":"Open"})
-    CloseTrades = tb_broker.order_get({"trad_status":"Close","date":datetime.today().strftime("%d-%m-%Y")})
+    OpenTrades = tb_broker.orders_list({"trad_status":"Open"})
+    CloseTrades = tb_broker.orders_list({"trad_status":"Close","date":datetime.today().strftime("%d-%m-%Y")})
 
     SummryData = tb_broker.generate_report(account)
 
@@ -216,7 +216,7 @@ def AccountDashbord(account):
                   ("Positive/Nagative", f"{data['Positive Trades']}/{data['Nagative Trades']}"),
                   ("Win Rate", data['Win Ratio']), 
                   ("Grow", data['Total PnL']), 
-                  ("Account Balance", tb_broker.account_get(account)['body']['account_balance'])]
+                  ("Balance", tb_broker.account_get(account)['body']['account_balance'])]
  
 
 
@@ -225,11 +225,18 @@ def AccountDashbord(account):
     return render_template('Pages/accountDashbord.html',OpenTrades=OpenTrades,CloseTrades=CloseTrades,SummryData=SummryData['body'],scorebords=scorebords)
 
 
-@app.route('/update_trad')
+@app.route('/update_trad/<order_id>')
 @login_required
-def UpdateTrad():
-    updatetrad = {"name":1,"age":2}
-    return render_template('Pages/UpdateTrad.html',updatetrad=updatetrad)
+def UpdateTrad(order_id):
+
+    if request.method == 'POST':
+        stoploss_price = request.form['stoploss_price']
+        target_price = request.form['target_price']
+
+        update_status = tb_broker.order_update(order_id=order_id,query={"stoploss_price":stoploss_price,"target_price":target_price})
+        flash(update_status)
+    orderData = tb_broker.orders_get(query={"order_id":str(order_id)})
+    return render_template('Pages/UpdateTrad.html',orderData=orderData)
 
 @app.route('/account_overview/<account>')
 @login_required

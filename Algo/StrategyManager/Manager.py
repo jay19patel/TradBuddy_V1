@@ -29,13 +29,11 @@ async def find_entries(index_data, fyers_obj, TimeFrame):
         }
     except Exception as e:
         error_msg = f"Error occurred while processing {index_data[0]}: {e}"
-        print(error_msg)
         logging.error(error_msg)
         return []
 
 
 async def store_strategy_statuses(fyers_obj):   
-    print("Strategy Manager is Runing.")
     Symbol = ["NSE:NIFTY50-INDEX", "NSE:NIFTYBANK-INDEX"]
     TimeFrame = "15"
     results = {}
@@ -52,11 +50,10 @@ async def store_strategy_statuses(fyers_obj):
     try:
         with open(output_file_path, "w") as f:
             json.dump(results, f)
-        logging.info("Strategy Manager Status Update successful")
+        logging.INFO("Strategy Manager Status Update successful")
     except Exception as e:
         error_msg = f"Error occurred while writing to strategies_results.json: {e}"
-        print(error_msg)
-        logging.error(error_msg)
+        logging.err(error_msg)
 
 @market_time_decorator(Open_time = "9:15",Close_time = "15:15",market_status="Open",Interval = 60)
 def StrategyManagerExecution(fyers_obj):

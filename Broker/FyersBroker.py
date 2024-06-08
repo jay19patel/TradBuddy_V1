@@ -52,6 +52,7 @@ class Fyers:
         )
         auth_link = session.generate_authcode()
         print("auth_link:",auth_link)
+        logging.info("auth_link:",auth_link)
         driver = webdriver.Chrome(options=chrome_options)
         try:
             driver.get(auth_link)
@@ -89,7 +90,7 @@ class Fyers:
             with open(file_path, 'w') as file:
                 file.write(access_token)
         except :
-            print("Error")
+            logging.error("Error")
         finally:
             logging.info("[ Fyers Access Token  ]")
             driver.quit()

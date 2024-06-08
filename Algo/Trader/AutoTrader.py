@@ -28,12 +28,11 @@ async def process_order_place(account,Fyers,TradBuddy):
         try:
             account_number = account["account_id"]
             tasks = []
-            print(account["strategy"],"strategy")
             for strategy_key in account["strategy"]:
                 for symbol in account["strategy"][strategy_key]:
                     status = strategies_results.get(symbol, {}).get(strategy_key,"None")
                     price = strategies_results.get(symbol, {}).get("price")
-                    is_already = TradBuddy.order_get({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
+                    is_already = TradBuddy.orders_list({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
                     if status != "None" and len(is_already) <= 0 :
                         print(f"+----------------Buy[{symbol}]------------------+")
                         tasks.append(PlaceOrder(account_number, strategy_key, symbol, status,price,Fyers,TradBuddy))
@@ -79,7 +78,7 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
         if trad['stoploss_price'] >= live_price:
             logging.info(f"STOPLOSS HIT for : {order_id}")
             close_status = TradBuddy.order_close(account_id,order_id,live_price)
-            print(close_status)
+            logging.info(close_status)
             return
     except Exception as e:
         logging.error(f"Error in [process_order_cancel] : {e}")
@@ -92,7 +91,7 @@ async def worker(Fyers,TradBuddy):
         await asyncio.gather(*(process_order_place(account,Fyers,TradBuddy) for account in accounts))
 
         # ORDER CANCEL ----------------------------
-        open_trads = TradBuddy.order_opens()
+        open_trads = TradBuddy.orders_open()
         logging.info(f"OPEN TRADS:{len(open_trads)}")
         if len(open_trads) == 0 :
             return

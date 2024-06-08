@@ -343,17 +343,24 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-    def orders_today(self):
+    def orders_open(self):
         try:
-            order_book = self.orders_collection.find({"trad_status": "Close"})
+            order_book = self.orders_collection.find({"trad_status": "Open"})
             return list(order_book)
         except:
             return None
 
-    def order_get(self,query):
+    def orders_list(self,query):
         try:
             order_book = self.orders_collection.find(query)
             return list(order_book)
+        except:
+            return None
+
+    def orders_get(self,query):
+        try:
+            order_book = self.orders_collection.find_one(query)
+            return order_book
         except:
             return None
 

@@ -16,7 +16,6 @@ logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level
 
 def fetch_option_details():
     logging.info("Fetching new Option details from Online")
-    print("Fetching new Option details from Online")
     spotnames = ['BANKNIFTY', 'FINNIFTY', 'NIFTY', 'SENSEX', 'BANKEX'] 
     # spotnames = ['BANKNIFTY','NIFTY'] 
     nse_fetch = requests.get('https://public.fyers.in/sym_details/NSE_FO.csv')
@@ -54,7 +53,6 @@ def fetch_option_details():
  
 # Index pass kare to at the money no symbol mali jay
 def get_option_for(trad_index, trad_side, price,expiry = 0):
-    print("INDEX NAME:",trad_index)
     tred_sp = round(price,-2)
     current_date = datetime.now().strftime('%Y-%m-%d')
     file_path = f"{os.getcwd()}/Records/sym_details_{current_date}.csv"
