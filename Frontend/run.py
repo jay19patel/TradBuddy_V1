@@ -59,6 +59,10 @@ def inject_accounts():
 def home():
     return render_template('Pages/home.html')
 
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     flash(f"Something Wrong this Process You are redirecting : {e}")
+#     return redirect(url_for('home'))
 
 @app.route('/profile')
 @login_required
@@ -211,14 +215,21 @@ def AccountDashbord(account):
     SummryData = tb_broker.generate_report(account)
 
     data = tb_broker.perform_analysis(account)['body']
-    scorebords = [("Trades", data['Total Trades']), 
-                  ("Open/Close", f"{data['Open Trades']}/{data['Closed Trades']}"),
-                  ("Positive/Nagative", f"{data['Positive Trades']}/{data['Nagative Trades']}"),
-                  ("Win Rate", data['Win Ratio']), 
-                  ("Grow", data['Total PnL']), 
-                  ("Balance", tb_broker.account_get(account)['body']['account_balance'])]
- 
-
+    print(data)
+    if data :
+        scorebords = [("Trades", data.get('Total Trades',0)), 
+                    ("Open/Close", f"{data.get('Open Trades',0)}/{data.get('Closed Trades',0)}"),
+                    ("Positive/Nagative", f"{data.get('Positive Trades',0)}/{data.get('Nagative Trades',0)}"),
+                    ("Win Rate", data.get('Win Ratio',0)), 
+                    ("Grow", data.get('Total PnL',0)), 
+                    ("Balance", tb_broker.account_get(account)['body']['account_balance'])]
+    else:
+        scorebords = [("Trades", 0), 
+                    ("Open/Close", "0/0"),
+                    ("Positive/Nagative", "0/0"),
+                    ("Win Rate", "0/0"), 
+                    ("Grow",0), 
+                    ("Balance", tb_broker.account_get(account)['body']['account_balance'])]
 
     # scorebords = [("Trades",0),("Open/Close",0),("Positive/Nagative ",0),("Win Rate",0),("Grow",0),("Account Balance",10000)]
     

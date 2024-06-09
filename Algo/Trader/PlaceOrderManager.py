@@ -4,8 +4,16 @@ from Utility.OptionSelection import get_option_for
 import logging
 logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy):
+async def PlaceOrder(account, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy):
     # FIND OPTION DETAILS-------------------
+
+    account_id = account["account_id"]
+    index_sl =account["base_stoploss"]
+    index_tg = account["base_target"]
+
+
+
+
     get_option_details = get_option_for(trad_index,trad_side,trad_price)
     if get_option_details == None:
         logging.info("Option Details Not found")
@@ -30,7 +38,7 @@ async def PlaceOrder(account_id, strategy_name, trad_index, trad_side,trad_price
 
 
     # FIND SL - TARGET -------------------
-    index_sl,index_tg = 20,40
+    # index_sl,index_tg = 20,40
     current_option_sl, current_option_tg = [current_option_price * (100 - index_sl) / 100, current_option_price * (100 + index_tg) / 100]
 
 

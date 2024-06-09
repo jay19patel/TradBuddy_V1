@@ -26,7 +26,7 @@ async def process_order_place(account,Fyers,TradBuddy):
             file.seek(0)
             strategies_results = json.load(file)
         try:
-            account_number = account["account_id"]
+            # account_number = account["account_id"]
             tasks = []
             for strategy_key in account["strategy"]:
                 for symbol in account["strategy"][strategy_key]:
@@ -35,7 +35,7 @@ async def process_order_place(account,Fyers,TradBuddy):
                     is_already = TradBuddy.orders_list({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
                     if status != "None" and len(is_already) <= 0 :
                         print(f"+----------------Buy[{symbol}]------------------+")
-                        tasks.append(PlaceOrder(account_number, strategy_key, symbol, status,price,Fyers,TradBuddy))
+                        tasks.append(PlaceOrder(account, strategy_key, symbol, status,price,Fyers,TradBuddy))
             await asyncio.gather(*tasks)
         except Exception as e:
             logging.error(f"Error in [process_order_place] : {e}")
@@ -59,8 +59,6 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
                 trailed_sl_pr = account.get("trailing_stoploss",5)
                 trailed_tg_pr = account.get("trailing_target",10)
                 current_trailed_sl, current_trailed_tg = [live_price * (100 - trailed_sl_pr) / 100, live_price * (100 + trailed_tg_pr) / 100]
-
-
                 update_query ={
                     "stoploss_price" : current_trailed_sl,
                     "target_price":current_trailed_tg,
@@ -105,7 +103,7 @@ async def worker(Fyers,TradBuddy):
 
 
 from Utility.TimeSupervisor import market_time_decorator
-@market_time_decorator(Open_time = "9:15",Close_time = "23:15",market_status="Open",Interval = 60)
+@market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 10)
 def AutoBuySell(Fyers,TradBuddy):
     asyncio.run(worker(Fyers,TradBuddy))
 

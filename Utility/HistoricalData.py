@@ -123,11 +123,17 @@ def GetHistoricalDataframe(fyers_obj,index_name,time_frame):
     df['Candle_Signal'] = np.select(conditions, choices, default="Neutral")
     df['Prev_Candle_Signal'] =df['Candle_Signal'].shift(1)
     df['Prev_Candle'] = df['Candle'].shift(1)
+
+    df["2Prev_High"] = df["High"].shift(2)
+    df["2Prev_Low"] = df["Low"].shift(2)
+    df["1Prev_High"] = df["High"].shift(1)
+    df["1Prev_Low"] = df["Low"].shift(1)
+    
     df.dropna(inplace=True)
     df[["Small_Swing_Min","Small_Swing_Max"]]=df.apply(FindMinMax, axis=1, result_type='expand')
 
     
     merged_df = df_day.merge(df, on='Day_Date', how='inner')
-    merged_df.dropna(inplace=True)
-    merged_df.drop(['Day_Datetime'], axis=1, inplace=True)
+    # merged_df.dropna(inplace=True)
+    # merged_df.drop(['Day_Datetime'], axis=1, inplace=True)
     return merged_df

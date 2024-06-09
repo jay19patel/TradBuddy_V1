@@ -35,35 +35,44 @@ def create_uuid(name):
 def tbCurrentTimestamp():
     return datetime.datetime.now()
 
+def get_value(data, key, default):
+    value = data.get(key)
+    if value in [None, ""]:
+        return default
+    return value
+
+
 class TradBuddyBroker:
     def __init__(self):
         self.transactions_collection, self.account_collection, self.notifications_collection, self.orders_collection, self.mongo_connection = DBConnection_for_Broker()
         self.isAuthenticated = False
         
 
+
     def account_create(self, **data):
         try:
             account_id = f"ACC-{str(self.account_collection.count_documents({}) + 1).zfill(3)}"
             accountSchema = {
-                    "account_id": account_id,
-                    "account_balance": data.get("account_balance") or 100000,
-                    "account_initial_balance": data.get("account_balance") or 100000,
-                    "is_activate": data.get("is_activate", True),
-                    "strategy": data.get("strategy", {}),
-                    "max_trad_per_day": data.get("max_trad_per_day", 10),
-                    "todays_margin":(data.get("todays_margin", float(0))),
-                    "todays_trad_margin": (data.get("todays_trad_margin", float(0))),
-                    "account_min_profile": (data.get("account_min_profile", float(0))),
-                    "account_max_loss": (data.get("account_max_loss", float(0))),
-                    "base_stoploss": (data.get("base_stoploss", float(0))),
-                    "base_target": (data.get("base_target", float(0))),
-                    "trailing_status": data.get("trailing_status", True),
-                    "trailing_stoploss": (data.get("trailing_stoploss", float(0))),
-                    "trailing_target": (data.get("trailing_target", float(0))),
-                    "payment_status": data.get("payment_status", "Paper Trad"),
-                    "description": data.get("description", ""),
-                    "last_updated_datetime": tbCurrentTimestamp()
-                }
+                "account_id": account_id,
+                "account_balance": get_value(data, "account_balance", 100000),
+                "account_initial_balance": get_value(data, "account_balance", 100000),
+                "is_activate": data.get("is_activate", True),
+                "strategy": data.get("strategy", {}),
+                "max_trad_per_day": int(get_value(data, "max_trad_per_day", 10)),
+                "todays_margin": float(get_value(data, "todays_margin", 0.0)),
+                "todays_trad_margin": float(get_value(data, "todays_trad_margin", 0.0)),
+                "account_min_profile": float(get_value(data, "account_min_profile", 0.0)),
+                "account_max_loss": float(get_value(data, "account_max_loss", 0.0)),
+                "base_stoploss": float(get_value(data, "base_stoploss", 0.0)),
+                "base_target": float(get_value(data, "base_target", 0.0)),
+                "trailing_status": get_value(data, "trailing_status", True),
+                "trailing_stoploss": float(get_value(data, "trailing_stoploss", 0.0)),
+                "trailing_target": float(get_value(data, "trailing_target", 0.0)),
+                "payment_status": get_value(data, "payment_status", "Paper Trad"),
+                "description": get_value(data, "description", ""),
+                "last_updated_datetime": tbCurrentTimestamp()
+            }
+
 
             self.account_collection.insert_one(accountSchema)
             return {
@@ -459,7 +468,7 @@ class TradBuddyBroker:
         except Exception as e:
             return {
                 "message": "perform_analysis: fail - Failed to perform analysis.",
-                "body": str(e),
+                "body": None,
                 "status": "Fail"
             }
 
