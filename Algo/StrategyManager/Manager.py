@@ -31,6 +31,7 @@ async def find_entries(index_data, fyers_obj, TimeFrame):
         }
     except Exception as e:
         error_msg = f"Error occurred while processing {index_data[0]}: {e}"
+        logging.error(error_msg)
         return []
 
 
