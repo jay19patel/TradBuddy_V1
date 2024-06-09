@@ -52,7 +52,7 @@ class Fyers:
         )
         auth_link = session.generate_authcode()
         print("auth_link:",auth_link)
-        logging.info("auth_link:",auth_link)
+        logging.info(f"auth_link:{auth_link}")
         driver = webdriver.Chrome(options=chrome_options)
         try:
             driver.get(auth_link)

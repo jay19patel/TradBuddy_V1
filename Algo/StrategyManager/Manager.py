@@ -57,7 +57,7 @@ async def store_strategy_statuses(fyers_obj):
         error_msg = f"Error occurred while writing to strategies_results.json: {e}"
         logging.err(error_msg)
 
-@market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 10)
+@market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 60)
 def StrategyBuilder(fyers_obj):
     asyncio.run(store_strategy_statuses(fyers_obj))
 
