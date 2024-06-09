@@ -7,6 +7,8 @@ import asyncio
 from Algo.Strategys.BaseStategys import strategy_1, strategy_2,strategy_3,strategy_4
 from Utility.TimeSupervisor import market_time_decorator
 from Utility.HistoricalData import GetHistoricalDataframe
+
+
 logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
@@ -29,7 +31,6 @@ async def find_entries(index_data, fyers_obj, TimeFrame):
         }
     except Exception as e:
         error_msg = f"Error occurred while processing {index_data[0]}: {e}"
-        logging.error(error_msg)
         return []
 
 
@@ -50,12 +51,12 @@ async def store_strategy_statuses(fyers_obj):
     try:
         with open(output_file_path, "w") as f:
             json.dump(results, f)
-        logging.INFO("Strategy Manager Status Update successful")
+        logging.info("Strategy Manager Status Update successful")
     except Exception as e:
         error_msg = f"Error occurred while writing to strategies_results.json: {e}"
         logging.err(error_msg)
 
-@market_time_decorator(Open_time = "9:15",Close_time = "15:15",market_status="Open",Interval = 60)
-def StrategyManagerExecution(fyers_obj):
+@market_time_decorator(Open_time = "9:15",Close_time = "23:15",market_status="Open",Interval = 60)
+def StrategyBuilder(fyers_obj):
     asyncio.run(store_strategy_statuses(fyers_obj))
 

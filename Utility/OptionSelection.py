@@ -38,7 +38,7 @@ def fetch_option_details():
     filtered_df["INDEX"].replace({
         "NIFTY": "NSE:NIFTY50-INDEX",
         "BANKNIFTY": "NSE:NIFTYBANK-INDEX",
-        "FINNIFTY": "NSE:NIFTY50-INDEX",
+        "FINNIFTY": "NSE:FINNIFTY-INDEX",
         "BANKEX": "NSE:BANKEX-INDEX",
         "SENSEX": "NSE:SENSEX-INDEX"
         },

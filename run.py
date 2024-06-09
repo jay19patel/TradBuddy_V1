@@ -1,5 +1,5 @@
-from Algo.StrategyManager.Manager import StrategyManagerExecution
-from Algo.Trader.AutoTrader import run_worker
+from Algo.StrategyManager.Manager import StrategyBuilder
+from Algo.Trader.AutoTrader import AutoBuySell
 from Broker.FyersBroker import Fyers
 from Broker.TradBuddyBroker import TradBuddyBroker
 import threading
@@ -14,17 +14,17 @@ if __name__ == '__main__':
     tb_obj = TradBuddyBroker()
 
     try:
-        thread1 = threading.Thread(target=StrategyManagerExecution, args=(fyers_obj,))
-        thread2 = threading.Thread(target=run_worker, args=(fyers_obj, tb_obj))
-        thread3 = threading.Thread(target=get_overview, args=(fyers_obj.fyers_instance,))
+        thread1 = threading.Thread(target=StrategyBuilder, args=(fyers_obj,))
+        # thread2 = threading.Thread(target=AutoBuySell, args=(fyers_obj, tb_obj))
+        # thread3 = threading.Thread(target=get_overview, args=(fyers_obj.fyers_instance,))
 
-        thread1.start()
-        thread2.start()
-        thread3.start()
+        # thread1.start()
+        # thread2.start()
+        # thread3.start()
 
-        thread1.join()
-        thread2.join()
-        thread3.join()
+        # thread1.join()
+        # thread2.join()
+        # thread3.join()
     except Exception as e:
         print("Error in Main Execution:", e)
 
