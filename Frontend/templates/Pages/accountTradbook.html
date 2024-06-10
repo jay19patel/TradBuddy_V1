@@ -1,79 +1,46 @@
-{% extends "base.html" %} 
-{% block title %} Tradbook {% endblock %} 
+{% extends "base.html" %}
+{% block title %} Tradbook {% endblock %}
 {% block content %}
 
 <!-- Table 3: Close Trades Data -->
 <table class="border-collapse w-full">
   <thead>
     <tr>
-      <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">Date</th>
-      {% for tablecol in [
-          "ID",
-          "Symbol",
-          "Buy Price",
-          "Sell Price",
-          "PnL",
-          "Buy Datetime",
-          "Sell Datetime",
-          "Quantity"
-      ] %}
+      {% for key in tradbook[0].keys() %}
+      {% if key not in ['account_id', 'strategy', 'trad_status', 'trad_type', 'note'] %}
       <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
-        {{ tablecol }}
+        {{ key|replace('_', ' ')|capitalize }}
       </th>
+      {% endif %}
       {% endfor %}
     </tr>
   </thead>
   <tbody>
     {% if tradbook %}
-    {{tradbook}}
     {% for trade in tradbook %}
-    <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10" id="tradeRow{{ trade['ID'] }}">
+    <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10">
+      {% for key, value in trade.items() %}
+      {% if key not in ['account_id', 'strategy', 'trad_status', 'trad_type', 'note'] %}
       <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Date</span>
-        {{ trade['date'] }}
-      </td>
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">ID</span>
-        {{ trade['order_id'] }}
-      </td>
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Symbol</span>
-        {{ trade['option_symbol'] }}
-      </td>
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Buy Price</span>
-        {{ trade['buy_price'] }}
-      </td>
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Sell Price</span>
-        {{ trade['sel_price'] }}
-      </td>
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">PNL</span>
-        {% if  trade['pnl'] >= 0 %}
-        <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ trade['pnl'] }}</span>
+        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">{{ key|replace('_', ' ')|capitalize }}</span>
+        {% if key == 'pnl' %}
+          {% if value >= 0 %}
+          <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ value|round(2) }}</span>
+          {% else %}
+          <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ value|round(2) }}</span>
+          {% endif %}
         {% else %}
-        <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ trade['pnl'] }}</span>
+          {{ value }}
         {% endif %}
       </td>
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Buy Datetime</span>
-        {{ trade['buy_datetime'] }}
-      </td>
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Sell Datetime</span>
-        {{ trade['sell_datetime'] }}
-      </td>
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Quantity</span>
-        {{ trade['qnty'] }}
-      </td>
+      {% endif %}
+      {% endfor %}
     </tr>
     {% endfor %}
     {% else %}
     <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10">
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static" colspan="10">
-        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Date</span>
+      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static" colspan="{{ tradbook[0].keys()|length - 5 }}">
+        <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">No data available</span>
         <div class="flex justify-center">
           <span>----- No data available. -----</span>
         </div>
@@ -82,6 +49,5 @@
     {% endif %}
   </tbody>
 </table>
-
 
 {% endblock %}

@@ -53,7 +53,7 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
     try:
         if trad['target_price'] <= live_price :
             if account["body"]["trailing_status"] == "Activate":
-                logging.info(f"TARGET TRAIL for : {order_id}")
+                logging.info(f"TARGET TRAIL for : {account_id}-{trad["option_symbol"]}-{order_id}")
                 trailing_count = trad.get("trailing_count")
 
                 trailed_sl_pr = account.get("trailing_stoploss",5)
@@ -68,13 +68,13 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
                 logging.info(trail_status)
                 return 
             else:
-                logging.info(f"TARGET HIT for : {order_id}")
+                logging.info(f"TARGET HIT for : {account_id}-{trad["option_symbol"]}-{order_id}")
                 close_status = TradBuddy.order_close(account_id,order_id,live_price)
                 logging.info(close_status)
                 return
 
         if trad['stoploss_price'] >= live_price:
-            logging.info(f"STOPLOSS HIT for : {order_id}")
+            logging.info(f"STOPLOSS HIT for : {account_id}-{trad["option_symbol"]}-{order_id}")
             close_status = TradBuddy.order_close(account_id,order_id,live_price)
             logging.info(close_status)
             return
@@ -95,7 +95,7 @@ async def worker(Fyers,TradBuddy):
             return
         open_order_symbols =','.join({ i["option_symbol"] for i in  open_trads})
         open_order_live_price = Fyers.get_current_ltp(open_order_symbols)
-        logging.info(f"Open Orders Live Price :{open_order_live_price}")
+        logging.info(f"Open Orders Live Price : {open_order_live_price}")
         if "Unknown" not in open_order_live_price :
             await asyncio.gather(*(process_order_cancel(trads,open_order_live_price,Fyers,TradBuddy) for trads in open_trads))
     except Exception as e:

@@ -282,7 +282,7 @@ class TradBuddyBroker:
             self.orders_collection.insert_one(order_schema)
             self.account_collection.update_one({"account_id": data["account_id"]}, {"$inc": {"account_balance": -isBuyMargin}})
             return {
-                "message": f"order_place [{order_id}]: success - Order placed successfully.",
+                "message": f"order_place - Order placed successfully.",
                 "body": order_id,
                 "status": "Ok"
             }
@@ -329,7 +329,7 @@ class TradBuddyBroker:
 
                 if result_order.modified_count > 0 and result_account.modified_count > 0:
                     return {
-                        "message": f"order_close [{order_id}]: success - Order closed successfully with PNL: {isPnl}",
+                        "message": f"order_close [success - Order closed successfully with PNL: {isPnl}",
                         "body": None,
                         "status": "Ok"
                     }

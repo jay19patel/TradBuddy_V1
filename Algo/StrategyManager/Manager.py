@@ -52,7 +52,7 @@ async def store_strategy_statuses(fyers_obj):
     try:
         with open(output_file_path, "w") as f:
             json.dump(results, f)
-        logging.info("Strategy Manager Status Update successful")
+        logging.info("Strategy Builder Updated successful")
     except Exception as e:
         error_msg = f"Error occurred while writing to strategies_results.json: {e}"
         logging.err(error_msg)
