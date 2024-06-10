@@ -20,7 +20,7 @@ dayly_stacks = mongo_connection["DailyStacks"]
 
 
 
-@market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 10)
+@market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 60)
 def get_overview(fyers_obj):
     try:
         option_chain_data = OptionChain(fyers_obj)

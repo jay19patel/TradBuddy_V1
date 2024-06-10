@@ -209,8 +209,8 @@ def AccountDashbord(account):
 
     # print({"trad_status":"Close","date":datetime.today().strftime("%d-%m-%Y")})
 
-    OpenTrades = tb_broker.orders_list({"trad_status":"Open"})
-    CloseTrades = tb_broker.orders_list({"trad_status":"Close","date":datetime.today().strftime("%d-%m-%Y")})
+    OpenTrades = tb_broker.orders_list({"trad_status":"Open","account_id":account})
+    CloseTrades = tb_broker.orders_list({"trad_status":"Close","account_id":account,"date":datetime.today().strftime("%d-%m-%Y")})
 
     SummryData = tb_broker.generate_report(account)
 
