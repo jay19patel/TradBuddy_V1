@@ -1,12 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session,flash
-from flask_bcrypt import Bcrypt
 from functools import wraps
 from datetime import timedelta,datetime
 
 from Broker.TradBuddyBroker import TradBuddyBroker
 
 app = Flask(__name__)
-bcrypt = Bcrypt(app)
 app.secret_key = 'it_is_very_strong_password_123'
 app.permanent_session_lifetime = timedelta(days=1)
 
@@ -212,17 +210,16 @@ def AccountDashbord(account):
     OpenTrades = tb_broker.orders_list({"trad_status":"Open","account_id":account})
     CloseTrades = tb_broker.orders_list({"trad_status":"Close","account_id":account,"date":datetime.today().strftime("%d-%m-%Y")})
 
-    SummryData = tb_broker.generate_report(account)
+    SummryData = tb_broker.generate_report(account,True)
 
     data = tb_broker.perform_analysis(account)['body']
-    print(data)
     if data :
         scorebords = [("Trades", data.get('Total Trades',0)), 
                     ("Open/Close", f"{data.get('Open Trades',0)}/{data.get('Closed Trades',0)}"),
                     ("Positive/Nagative", f"{data.get('Positive Trades',0)}/{data.get('Nagative Trades',0)}"),
-                    ("Win Rate", data.get('Win Ratio',0)), 
-                    ("Grow", data.get('Total PnL',0)), 
-                    ("Balance", tb_broker.account_get(account)['body']['account_balance'])]
+                    ("Win Rate", round(data.get('Win Ratio',0),2)), 
+                    ("Grow", round(data.get('Total PnL',0),2)), 
+                    ("Balance", round(tb_broker.account_get(account)['body']['account_balance'],2))]
     else:
         scorebords = [("Trades", 0), 
                     ("Open/Close", "0/0"),
@@ -235,24 +232,27 @@ def AccountDashbord(account):
     
     return render_template('Pages/accountDashbord.html',OpenTrades=OpenTrades,CloseTrades=CloseTrades,SummryData=SummryData['body'],scorebords=scorebords)
 
-
-@app.route('/update_trad/<order_id>')
+@app.route('/update_trad/<order_id>', methods=['GET', 'POST'])
 @login_required
 def UpdateTrad(order_id):
+    orderData = None
 
     if request.method == 'POST':
         stoploss_price = request.form['stoploss_price']
         target_price = request.form['target_price']
 
-        update_status = tb_broker.order_update(order_id=order_id,query={"stoploss_price":stoploss_price,"target_price":target_price})
+        update_status = tb_broker.order_update(order_id=order_id, query={"stoploss_price": stoploss_price, "target_price": target_price})
         flash(update_status)
-    orderData = tb_broker.orders_get(query={"order_id":str(order_id)})
-    return render_template('Pages/UpdateTrad.html',orderData=orderData)
+        return redirect(url_for('UpdateTrad', order_id=order_id))  # Redirect to avoid form resubmission
+
+    orderData = tb_broker.orders_get(query={"order_id": str(order_id)})
+    return render_template('Pages/UpdateTrad.html', orderData=orderData)
 
 @app.route('/account_overview/<account>')
 @login_required
 def accountOverview(account):
-    overviewData = []
+    overviewData = tb_broker.generate_report(account,False)['body']
+    print(overviewData,"-----------------")
     return render_template('Pages/accountOverview.html',overviewData=overviewData)
 
 
@@ -268,7 +268,7 @@ def AccountTradbook(account):
 
     tradbook = tb_broker.order_book(account)
 
-    return render_template('Pages/accountTradbook.html',tradbook=tradbook['body'])
+    return render_template('Pages/accountTradbook.html',tradbook=tradbook['body'] or None)
 
 
 

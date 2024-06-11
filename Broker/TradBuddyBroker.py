@@ -388,11 +388,16 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
 
-    def generate_report(self, account_id):
+    def generate_report(self, account_id,todays):
         try:
-            order_book = list(self.orders_collection.find({"account_id": account_id, "trad_status": "Open"}))
+            if todays:
+                order_book = list(self.orders_collection.find({"account_id": account_id, "trad_status": "Close","date":tbCurrentTimestamp().strftime("%d-%m-%Y")}))
+            else:
+                order_book = list(self.orders_collection.find({"account_id": account_id, "trad_status": "Close"}))
+            
             if len(order_book) > 0:
                 df = pd.DataFrame(order_book)
+                print(df)
                 count_df_group = df.groupby(['trad_index', 'trad_side', 'pnl_status']).size().reset_index(name='Total Trades')
                 count_df = count_df_group.pivot_table(index='trad_index', columns=['trad_side', 'pnl_status'], values='Total Trades', aggfunc='sum', fill_value=0)
                 count_df.columns = ['_'.join(col) for col in count_df.columns.values]
@@ -414,6 +419,8 @@ class TradBuddyBroker:
                 total_row['trad_index'] = 'Over All'
                 total_df = pd.DataFrame([total_row])
                 output = pd.concat([merged_df, total_df], ignore_index=True).to_dict('records')
+                
+                
                 return {
                     "message": "generate_report: success - Report generated successfully.",
                     "body": output,
@@ -449,7 +456,6 @@ class TradBuddyBroker:
             total_pnl = sum(total_close_list["pnl"])
 
             win_ratio = (total_close_list[total_close_list["pnl"] > 0].shape[0] / closed_trades) * 100 if closed_trades > 0 else 0
-
             analysis = {
                 "Total Trades": total_trades,
                 "Closed Trades": closed_trades,
