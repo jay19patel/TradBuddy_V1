@@ -43,7 +43,7 @@ async def process_order_place(account,Fyers,TradBuddy):
 
 # CANCEL ORDER 
 async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
-    live_price = max(all_price[trad["option_symbol"].split(":")[1]],0.1)
+    live_price = float(max(all_price[trad["option_symbol"].split(":")[1]],0.1))
     # live_price = 0.1
     order_id = trad.get("order_id")
     account_id = trad.get("account_id")
@@ -51,7 +51,7 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
     account = TradBuddy.account_get(account_id)
 
     try:
-        if trad['target_price'] <= live_price :
+        if float(trad['target_price']) <= live_price :
             if account["body"]["trailing_status"] == "Activate":
                 logging.info(f"TARGET TRAIL for : {account_id}-{trad["option_symbol"]}-{order_id}")
                 trailing_count = trad.get("trailing_count")
@@ -73,7 +73,7 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
                 logging.info(close_status)
                 return
 
-        if trad['stoploss_price'] >= live_price:
+        if float(trad['stoploss_price']) >= live_price:
             logging.info(f"STOPLOSS HIT for : {account_id}-{trad["option_symbol"]}-{order_id}")
             close_status = TradBuddy.order_close(account_id,order_id,live_price)
             logging.info(close_status)
