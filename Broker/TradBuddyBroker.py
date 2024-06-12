@@ -17,8 +17,9 @@ def DBConnection_for_Broker():
         notifications_collection = mongo_connection.get_collection("Notifications")
         orders_collection = mongo_connection.get_collection("Orders")
         transactions_collection = mongo_connection.get_collection("Transactions")
+        daily_collection = mongo_connection.get_collection("DailyCollection")
         print("Database connection established successfully")
-        return transactions_collection, account_collection, notifications_collection, orders_collection,mongo_connection
+        return transactions_collection, account_collection, notifications_collection, orders_collection,mongo_connection,daily_collection
     except Exception as e:
         print(f"Failed to establish database connection: {e}")
         return None, None, None, None, None
@@ -44,7 +45,7 @@ def get_value(data, key, default):
 
 class TradBuddyBroker:
     def __init__(self):
-        self.transactions_collection, self.account_collection, self.notifications_collection, self.orders_collection, self.mongo_connection = DBConnection_for_Broker()
+        self.transactions_collection, self.account_collection, self.notifications_collection, self.orders_collection, self.mongo_connection,self.daily_collection = DBConnection_for_Broker()
         self.isAuthenticated = False
         
 
@@ -90,7 +91,7 @@ class TradBuddyBroker:
     def account_update(self, account_id, update_data):
         try:
             print(update_data,"update_data")
-            result = self.account_collection.update_one({"account_id": "ACC-001"}, {"$set": update_data})
+            result = self.account_collection.update_one({"account_id": account_id}, {"$set": update_data})
             if result.modified_count:
                 return {
                     "message": f"account_update [{account_id}]: success - Account updated successfully.",
@@ -397,7 +398,6 @@ class TradBuddyBroker:
             
             if len(order_book) > 0:
                 df = pd.DataFrame(order_book)
-                print(df)
                 count_df_group = df.groupby(['trad_index', 'trad_side', 'pnl_status']).size().reset_index(name='Total Trades')
                 count_df = count_df_group.pivot_table(index='trad_index', columns=['trad_side', 'pnl_status'], values='Total Trades', aggfunc='sum', fill_value=0)
                 count_df.columns = ['_'.join(col) for col in count_df.columns.values]
@@ -439,9 +439,13 @@ class TradBuddyBroker:
                 "status": "Fail"
             }
     
-    def perform_analysis(self, account_id): # Daily data analysis
+    def perform_analysis(self, account_id,todays=False): # Daily data analysis
         try:
-            order_book = self.orders_collection.find({"account_id": account_id})
+            if todays:
+                order_book = self.orders_collection.find({"account_id": account_id,"date":tbCurrentTimestamp().strftime("%d-%m-%Y")})
+            else:
+                order_book = self.orders_collection.find({"account_id": account_id})
+
             alldf = pd.DataFrame(order_book)
             total_trades = alldf.shape[0]
             total_open_list = alldf[alldf["trad_status"] == "Open"]
@@ -477,6 +481,16 @@ class TradBuddyBroker:
                 "body": None,
                 "status": "Fail"
             }
+        
+
+    def daily_account_status(self, account_id):
+        data = self.daily_collection.find({"account_id":account_id})
+        return list(data)
+
+    def Get_quantity(self,trad_amount,quantity_per_lot,price):
+        varinace = 1000
+        lot_size = int((trad_amount - 50 - varinace)/(quantity_per_lot*price))*quantity_per_lot
+        return lot_size
 
 
 

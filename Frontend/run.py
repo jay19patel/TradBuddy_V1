@@ -66,7 +66,9 @@ def home():
 @login_required
 def Profile():
     AccountData = tb_broker.account_list({})
-
+    for accoun in AccountData:
+        accoun['TotalTrads'] = len(tb_broker.orders_list(query={"account_id":accoun['account_id']}))
+        accoun['TodaysTrads'] = len(tb_broker.orders_list(query={"account_id":accoun['account_id'],"date":datetime.today().strftime("%d-%m-%Y")}))
     return render_template('Pages/accountProfile.html' ,AccountsDetails=AccountData)
 
 
@@ -211,22 +213,17 @@ def AccountDashbord(account):
     CloseTrades = tb_broker.orders_list({"trad_status":"Close","account_id":account,"date":datetime.today().strftime("%d-%m-%Y")})
 
     SummryData = tb_broker.generate_report(account,True)
+    data = tb_broker.perform_analysis(account,True).get('body', {})
 
-    data = tb_broker.perform_analysis(account)['body']
-    if data :
-        scorebords = [("Trades", data.get('Total Trades',0)), 
-                    ("Open/Close", f"{data.get('Open Trades',0)}/{data.get('Closed Trades',0)}"),
-                    ("Positive/Nagative", f"{data.get('Positive Trades',0)}/{data.get('Nagative Trades',0)}"),
-                    ("Win Rate", round(data.get('Win Ratio',0),2)), 
-                    ("Grow", round(data.get('Total PnL',0),2)), 
-                    ("Balance", round(tb_broker.account_get(account)['body']['account_balance'],2))]
-    else:
-        scorebords = [("Trades", 0), 
-                    ("Open/Close", "0/0"),
-                    ("Positive/Nagative", "0/0"),
-                    ("Win Rate", "0/0"), 
-                    ("Grow",0), 
-                    ("Balance", tb_broker.account_get(account)['body']['account_balance'])]
+    scorebords = [
+        ("Trades", data.get('Total Trades', 0)),
+        ("Open/Close", f"{data.get('Open Trades', 0)}/{data.get('Closed Trades', 0)}"),
+        ("Positive/Nagative", f"{data.get('Positive Trades', 0)}/{data.get('Nagative Trades', 0)}"),
+        ("Win Rate", round(data.get('Win Ratio', 0), 2)),
+        ("Grow", round(data.get('Total PnL', 0), 2)),
+        ("Balance", round(tb_broker.account_get(account)['body']['account_balance'], 2))
+    ]
+
 
     # scorebords = [("Trades",0),("Open/Close",0),("Positive/Nagative ",0),("Win Rate",0),("Grow",0),("Account Balance",10000)]
     
@@ -252,8 +249,20 @@ def UpdateTrad(order_id):
 @login_required
 def accountOverview(account):
     overviewData = tb_broker.generate_report(account,False)['body']
-    print(overviewData,"-----------------")
-    return render_template('Pages/accountOverview.html',overviewData=overviewData)
+    data = tb_broker.perform_analysis(account).get('body', {})
+
+    scorebords = [
+        ("Trades", data.get('Total Trades', 0)),
+        ("Open/Close", f"{data.get('Open Trades', 0)}/{data.get('Closed Trades', 0)}"),
+        ("Positive/Nagative", f"{data.get('Positive Trades', 0)}/{data.get('Nagative Trades', 0)}"),
+        ("Win Rate", round(data.get('Win Ratio', 0), 2)),
+        ("Grow", round(data.get('Total PnL', 0), 2)),
+        ("Balance", round(tb_broker.account_get(account)['body']['account_balance'], 2))
+    ]
+
+    SummryData = tb_broker.daily_account_status(account)
+    # print(scorebords,"-----------------")
+    return render_template('Pages/accountOverview.html',overviewData=overviewData,scorebords=scorebords,SummryData=SummryData)
 
 
 @app.route('/notification')

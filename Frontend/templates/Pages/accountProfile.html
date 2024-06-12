@@ -7,7 +7,7 @@
     <table class="border-collapse w-full">
         <thead>
           <tr>
-            {% for tablecol in ["Account ID","Initial Amount","Current Amount","Gain Amount" ,"Gain in %","Activate Status","Description"]%}
+            {% for tablecol in ["Account ID","Initial Amount","Current Amount","Gain Amount" ,"Gain in %","Todays Trads","All Trads","Activate Status","Description"]%}
               <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
                 {{ tablecol }}
               </th>
@@ -43,6 +43,16 @@
                 {% else %}
                 <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ ((Account['account_balance'] - Account['account_initial_balance']) * 100 / Account['account_initial_balance'])|round(2) }}%</span>
                 {% endif %}
+              </td>
+
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Today's Trade</span>
+                <span class="rounded bg-blue-100 py-1 px-3 text-xs font-bold">{{Account['TodaysTrads']}}</span>
+              </td>
+
+              <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+                <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">Total Trade</span>
+                <span class="rounded bg-blue-100 py-1 px-3 text-xs font-bold">{{Account['TotalTrads']}}</span>
               </td>
              
               <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">

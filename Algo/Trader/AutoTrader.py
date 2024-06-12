@@ -34,7 +34,7 @@ async def process_order_place(account,Fyers,TradBuddy):
                     price = strategies_results.get(symbol, {}).get("price")
                     is_already = TradBuddy.orders_list({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
                     if status != "None" and len(is_already) <= 0 :
-                        print(f"+----------------[{account["account_id"]}] Buy[{symbol}] [{status}] [{strategy_key}]------------------+")
+                        print(f"+----------------[{account['account_id']}] Buy[{symbol}] [{status}] [{strategy_key}]------------------+")
                         tasks.append(PlaceOrder(account, strategy_key, symbol, status,price,Fyers,TradBuddy))
             await asyncio.gather(*tasks)
         except Exception as e:
@@ -53,7 +53,7 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
     try:
         if float(trad['target_price']) <= live_price :
             if account["body"]["trailing_status"] == "Activate":
-                logging.info(f"TARGET TRAIL for : {account_id}-{trad["option_symbol"]}-{order_id}")
+                logging.info(f"TARGET TRAIL for : {account_id}-{trad['option_symbol']}-{order_id}")
                 trailing_count = trad.get("trailing_count")
 
                 trailed_sl_pr = account.get("trailing_stoploss",5)
@@ -68,13 +68,13 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
                 logging.info(trail_status)
                 return 
             else:
-                logging.info(f"TARGET HIT for : {account_id}-{trad["option_symbol"]}-{order_id}")
+                logging.info(f"TARGET HIT for : {account_id}-{trad['option_symbol']}-{order_id}")
                 close_status = TradBuddy.order_close(account_id,order_id,live_price)
                 logging.info(close_status)
                 return
 
         if float(trad['stoploss_price']) >= live_price:
-            logging.info(f"STOPLOSS HIT for : {account_id}-{trad["option_symbol"]}-{order_id}")
+            logging.info(f"STOPLOSS HIT for : {account_id}-{trad['option_symbol']}-{order_id}")
             close_status = TradBuddy.order_close(account_id,order_id,live_price)
             logging.info(close_status)
             return
