@@ -15,20 +15,20 @@ if __name__ == '__main__':
     tb_obj = TradBuddyBroker()
 
     try:
-        # thread1 = threading.Thread(target=StrategyBuilder, args=(fyers_obj,))
+        thread1 = threading.Thread(target=StrategyBuilder, args=(fyers_obj,))
         thread2 = threading.Thread(target=AutoBuySell, args=(fyers_obj, tb_obj))
-        # thread3 = threading.Thread(target=get_overview, args=(fyers_obj.fyers_instance,))
-        # thread4 = threading.Thread(target=Account_status_update, args=(tb_obj,))
+        #thread3 = threading.Thread(target=get_overview, args=(fyers_obj.fyers_instance,))
+        thread4 = threading.Thread(target=Account_status_update, args=(tb_obj,))
 
-        # thread1.start()
+        thread1.start()
         thread2.start()
         # thread3.start()
-        # thread4.start()
+        thread4.start()
 
-        # thread1.join()
+        thread1.join()
         thread2.join()
         # thread3.join()
-        # thread4.join()
+        thread4.join()
     except Exception as e:
         print("Error in Main Execution:", e)
 
