@@ -28,8 +28,8 @@ def trade_margin_manager(tb_obj):
         todays_margin = round(balance*0.7,2)
         total_index = 2
         todays_trad_margin = round(todays_margin/(2*total_index),2)
-        max_loss = round(todays_margin*(accounts['account_max_loss']/100),2)
-        min_profit = round(todays_margin*(accounts['account_min_profit']/100),2)
+        max_loss = round(todays_margin*(account['account_max_loss']/100),2)
+        min_profit = round(todays_margin*(account['account_min_profit']/100),2)
         update_status =tb_obj.account_update(account['account_id'],{"todays_margin":todays_margin,
                                                                     "todays_trad_margin":todays_trad_margin,
                                                                     "account_max_loss":account_max_loss,
