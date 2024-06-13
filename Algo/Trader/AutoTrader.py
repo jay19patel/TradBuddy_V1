@@ -47,6 +47,7 @@ async def process_order_cancel(trad,all_price,Fyers,TradBuddy):
     # live_price = 0.1
     order_id = trad.get("order_id")
     account_id = trad.get("account_id")
+    buying_qty = trad.get("qnty")
 
     account = TradBuddy.account_get(account_id)
 

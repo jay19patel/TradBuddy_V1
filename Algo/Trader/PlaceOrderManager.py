@@ -7,14 +7,6 @@ logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level
 async def PlaceOrder(account, strategy_name, trad_index, trad_side,trad_price,Fyers,TradBuddy):
     # FIND OPTION DETAILS-------------------
 
-    account_id = account["account_id"]
-    index_sl =account["base_stoploss"]
-    index_tg = account["base_target"]
-    todays_trad_margin = account["todays_trad_margin"]
-
-
-
-
     get_option_details = get_option_for(trad_index,trad_side,trad_price)
     if get_option_details == None:
         logging.info("Option Details Not found")
@@ -34,12 +26,23 @@ async def PlaceOrder(account, strategy_name, trad_index, trad_side,trad_price,Fy
     # {'NIFTYBANK-INDEX': 48201.05, 'BANKNIFTY2443048200PE': 220}
     ((current_index_name, current_index_price), (current_option_name, current_option_price)) = tuple(zip(get_live_data.keys(),get_live_data.values()))
 
+
+
+
+    account_id = account["account_id"]
+    base_sl =account["base_stoploss"]
+    base_tg = account["base_target"]
+    todays_trad_margin = account["todays_trad_margin"]
+
+
     buy_qty = TradBuddy.Get_quantity(trad_amount=todays_trad_margin,
                                      quantity_per_lot=option_lot,
                                      price=current_option_price)
+
     # FIND SL - TARGET -------------------
     # index_sl,index_tg = 20,40
-    current_option_sl, current_option_tg = [current_option_price * (100 - index_sl) / 100, current_option_price * (100 + index_tg) / 100]
+    # Dynamic karvanu chhe ke jab Nifty rey to SL nallu ne Qunity vadhare | Banknifty rey to SL motu ne quanity osi
+    current_option_sl, current_option_tg = [current_option_price * (100 - base_sl) / 100, current_option_price * (100 + base_tg) / 100]
 
 
     order_place_status = TradBuddy.order_place(

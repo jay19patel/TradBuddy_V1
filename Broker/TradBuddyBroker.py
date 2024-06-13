@@ -62,7 +62,7 @@ class TradBuddyBroker:
                 "max_trad_per_day": int(get_value(data, "max_trad_per_day", 10)),
                 "todays_margin": float(get_value(data, "todays_margin", 0.0)),
                 "todays_trad_margin": float(get_value(data, "todays_trad_margin", 0.0)),
-                "account_min_profile": float(get_value(data, "account_min_profile", 0.0)),
+                "account_min_profit": float(get_value(data, "account_min_profit", 0.0)),
                 "account_max_loss": float(get_value(data, "account_max_loss", 0.0)),
                 "base_stoploss": float(get_value(data, "base_stoploss", 0.0)),
                 "base_target": float(get_value(data, "base_target", 0.0)),
