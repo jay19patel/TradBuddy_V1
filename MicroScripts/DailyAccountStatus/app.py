@@ -32,8 +32,8 @@ def trade_margin_manager(tb_obj):
         min_profit = round(todays_margin*(account['account_min_profit']/100),2)
         update_status =tb_obj.account_update(account['account_id'],{"todays_margin":todays_margin,
                                                                     "todays_trad_margin":todays_trad_margin,
-                                                                    "account_max_loss":account_max_loss,
-                                                                    "account_min_profit":account_min_profit
+                                                                    "account_max_loss":max_loss,
+                                                                    "account_min_profit":min_profit
                                                                     })
         # print(account['account_id'])
     print("Account Setting Updated for the better Performance")
