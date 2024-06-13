@@ -429,7 +429,7 @@ class TradBuddyBroker:
             else:
                 return {
                     "message": "generate_report: fail - Order book has no values.",
-                    "body": None,
+                    "body": {},
                     "status": "Fail"
                 }
         except Exception as e:
@@ -478,7 +478,7 @@ class TradBuddyBroker:
         except Exception as e:
             return {
                 "message": "perform_analysis: fail - Failed to perform analysis.",
-                "body": None,
+                "body": {},
                 "status": "Fail"
             }
         
@@ -487,14 +487,14 @@ class TradBuddyBroker:
         data = self.daily_collection.find({"account_id":account_id})
         return list(data)
 
-    def Get_quantity(self,trad_amount,quantity_per_lot,price,rr):
+    def Get_quantity(self,trade_amount,quantity_per_lot,price,rr):
         varinace = 500
-        sl_percentage = 35 - 25 * (quantity_per_lot - 5) / (30 - 5) 
+        sl_percentage = 35 - 25 * (quantity_per_lot - 10) / (30 -10 ) 
         sl_price = price * (1 - sl_percentage / 100)
         tg_price = ((price-sl_price)/rr)+price
-        return int(trade_amount-varinace // (quantity_per_lot * price))*quantity_per_lot, round(sl_price, 2),round(tg_price,2)
+        return int(trade_amount // (quantity_per_lot * price))*quantity_per_lot, round(sl_price, 2),round(tg_price,2)
 
-
+       
 
 
 

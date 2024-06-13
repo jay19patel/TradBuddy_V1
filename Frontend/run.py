@@ -89,6 +89,16 @@ def logs():
 
     return render_template('Pages/logs.html', log_content=log_content)
 
+@app.route('/clear_logs', methods=['POST'])
+@login_required
+def clear_logs():
+    log_file_path = 'Records/StrategyManager.log'
+    
+    # Clear the log file by truncating it
+    open(log_file_path, 'w').close()
+    
+    # Redirect back to the logs page
+    return redirect(url_for('logs'))
 
 
 @app.route('/add_account' ,methods=['GET', 'POST'])
@@ -208,7 +218,7 @@ def AccountDelete(account):
 def AccountDashbord(account):
 
     # print({"trad_status":"Close","date":datetime.today().strftime("%d-%m-%Y")})
-
+    
     OpenTrades = tb_broker.orders_list({"trad_status":"Open","account_id":account})
     CloseTrades = tb_broker.orders_list({"trad_status":"Close","account_id":account,"date":datetime.today().strftime("%d-%m-%Y")})
 
@@ -260,8 +270,7 @@ def accountOverview(account):
         ("Balance", round(tb_broker.account_get(account)['body']['account_balance'], 2))
     ]
 
-    SummryData = tb_broker.daily_account_status(account)
-    # print(scorebords,"-----------------")
+    SummryData = tb_broker.daily_account_status(account) 
     return render_template('Pages/accountOverview.html',overviewData=overviewData,scorebords=scorebords,SummryData=SummryData)
 
 
@@ -276,8 +285,8 @@ def Notification():
 def AccountTradbook(account):
 
     tradbook = tb_broker.order_book(account)
-
-    return render_template('Pages/accountTradbook.html',tradbook=tradbook['body'] or None)
+    print(tradbook)
+    return render_template('Pages/accountTradbook.html',tradbook=tradbook['body'])
 
 
 

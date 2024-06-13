@@ -5,6 +5,7 @@
 <!-- Table 3: Close Trades Data -->
 <table class="border-collapse w-full">
   <thead>
+    {% if tradbook and tradbook|length > 0 %}
     <tr>
       {% for key in tradbook[0].keys() %}
       {% if key not in ['account_id', 'strategy', 'trad_status', 'trad_type', 'note'] %}
@@ -14,9 +15,14 @@
       {% endif %}
       {% endfor %}
     </tr>
+    {% else %}
+    <tr>
+      <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell" colspan="100%">No data available</th>
+    </tr>
+    {% endif %}
   </thead>
   <tbody>
-    {% if tradbook %}
+    {% if tradbook and tradbook|length > 0 %}
     {% for trade in tradbook %}
     <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10">
       {% for key, value in trade.items() %}
@@ -39,7 +45,7 @@
     {% endfor %}
     {% else %}
     <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10">
-      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static" colspan="{{ tradbook[0].keys()|length - 5 }}">
+      <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static" colspan="100%">
         <span class="lg:hidden absolute top-0 left-0 bg-blue-200 px-2 py-1 text-xs font-bold uppercase">No data available</span>
         <div class="flex justify-center">
           <span>----- No data available. -----</span>
