@@ -35,14 +35,16 @@ async def PlaceOrder(account, strategy_name, trad_index, trad_side,trad_price,Fy
     todays_trad_margin = account["todays_trad_margin"]
 
 
-    buy_qty = TradBuddy.Get_quantity(trad_amount=todays_trad_margin,
-                                     quantity_per_lot=option_lot,
-                                     price=current_option_price)
+    quantity, current_option_sl ,current_option_tg = TradBuddy.Get_quantity(trad_amount=todays_trad_margin,
+                                                                            quantity_per_lot=option_lot,
+                                                                            price=current_option_price
+                                                                            rr =  base_sl/base_tg )
 
+    
     # FIND SL - TARGET -------------------
     # index_sl,index_tg = 20,40
     # Dynamic karvanu chhe ke jab Nifty rey to SL nallu ne Qunity vadhare | Banknifty rey to SL motu ne quanity osi
-    current_option_sl, current_option_tg = [current_option_price * (100 - base_sl) / 100, current_option_price * (100 + base_tg) / 100]
+    # current_option_sl, current_option_tg = [current_option_price * (100 - base_sl) / 100, current_option_price * (100 + base_tg) / 100]
 
 
     order_place_status = TradBuddy.order_place(
@@ -52,7 +54,7 @@ async def PlaceOrder(account, strategy_name, trad_index, trad_side,trad_price,Fy
         trad_side = trad_side,
         trigger_price = current_index_price,
         option_symbol = option_symbol,
-        qnty = buy_qty,
+        qnty = quantity,
         buyprice = current_option_price,
         sl_price = current_option_sl,
         target_price = current_option_tg,

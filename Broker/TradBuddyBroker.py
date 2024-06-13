@@ -487,10 +487,12 @@ class TradBuddyBroker:
         data = self.daily_collection.find({"account_id":account_id})
         return list(data)
 
-    def Get_quantity(self,trad_amount,quantity_per_lot,price):
-        varinace = 1000
-        lot_size = int((trad_amount - 50 - varinace)/(quantity_per_lot*price))*quantity_per_lot
-        return lot_size
+    def Get_quantity(self,trad_amount,quantity_per_lot,price,rr):
+        varinace = 500
+        sl_percentage = 35 - 25 * (quantity_per_lot - 5) / (30 - 5) 
+        sl_price = price * (1 - sl_percentage / 100)
+        tg_price = ((price-sl_price)/rr)+price
+        return int(trade_amount-varinace // (quantity_per_lot * price))*quantity_per_lot, round(sl_price, 2),round(tg_price,2)
 
 
 
