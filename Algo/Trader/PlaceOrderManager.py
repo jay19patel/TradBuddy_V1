@@ -35,9 +35,9 @@ async def PlaceOrder(account, strategy_name, trad_index, trad_side,trad_price,Fy
     todays_trad_margin = account["todays_trad_margin"]
 
 
-    quantity, current_option_sl ,current_option_tg = TradBuddy.Get_quantity(trad_amount=todays_trad_margin,
+    quantity, current_option_sl ,current_option_tg = TradBuddy.price=current_option_price(trad_amount=todays_trad_margin,
                                                                             quantity_per_lot=option_lot,
-                                                                            price=current_option_price
+                                                                            price=current_option_price,
                                                                             rr =  base_sl/base_tg )
 
     
