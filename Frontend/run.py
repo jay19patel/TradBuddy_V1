@@ -96,14 +96,12 @@ def parameters():
         with open('Records/strategies_results.json', 'r') as file:
             strategies_results = json.load(file)
     except (FileNotFoundError, IOError, json.JSONDecodeError) as e:
-        print(f"Error reading strategies_results.json: {e}")
         strategies_results = None
 
     try:
         with open('Records/get_overview.json', 'r') as file:
             get_overview = json.load(file)
     except (FileNotFoundError, IOError, json.JSONDecodeError) as e:
-        print(f"Error reading get_overview.json: {e}")
         get_overview = None
 
     if strategies_results:

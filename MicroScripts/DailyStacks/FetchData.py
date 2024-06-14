@@ -20,12 +20,13 @@ def GetNseData(url):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0'
     }
     time.sleep(2)
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        logging.warning(f"Failed to retrieve data from {url}, status code: {response.status_code}")
-        return None
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.json()
+    except:
+            logging.warning(f"Failed to retrieve data from {url}, status code: {response.status_code}")
+            return None
 
 def OptionChain(fyers_obj):
     IndexNameList = ["NSE:NIFTY50-INDEX", "NSE:NIFTYBANK-INDEX"]
@@ -91,13 +92,16 @@ def AdvancesDecline():
     for index_name in IndexNameList:
         datarow = GetNseData(f"https://www.nseindia.com/api/equity-stockIndices?index={index_name}")
         if datarow:
-            data = dict(datarow)
-            market_status = data['advance']
-            df = pd.DataFrame(data['data'])
-            listofcolumns = ['symbol', 'pChange']
-            df = df[listofcolumns].sort_values(by='pChange')
-            adv_dec_data[index_name] = df.to_dict(orient='records')
-            adv_dec_data[f"{index_name}_advance"] = market_status
+            try:
+                data = dict(datarow)
+                market_status = data['advance']
+                df = pd.DataFrame(data['data'])
+                listofcolumns = ['symbol', 'pChange']
+                df = df[listofcolumns].sort_values(by='pChange')
+                adv_dec_data[index_name] = df.to_dict(orient='records')
+                adv_dec_data[f"{index_name}_advance"] = market_status
+            except:
+                logging.warning(f"Failed to retrieve AdvancesDecline for {index_name}")
         else:
             logging.warning(f"Failed to retrieve advance/decline data for {index_name}")
     return adv_dec_data
