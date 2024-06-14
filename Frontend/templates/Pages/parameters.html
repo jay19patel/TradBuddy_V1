@@ -6,25 +6,24 @@
     <div class="w-1/3 bg-gray-300 h-px"></div>
     <span class="px-4 text-gray-500">Strategy Status</span>
     <div class="w-1/3 bg-gray-300 h-px"></div>
-  </div>
-
+</div>
 
 {% if strategies_results %}
-<table class="table-auto w-full bg-white rounded-lg shadow-md">
+<table class="border-collapse w-full">
     <thead>
         <tr class="bg-gray-200">
-            <th class="px-4 py-2">Index Name</th>
+            <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">Index Name</th>
             {% for column in column_names %}
-            <th class="px-4 py-2">{{ column.replace('_', ' ').capitalize() }}</th>
+            <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">{{ column.replace('_', ' ').capitalize() }}</th>
             {% endfor %}
         </tr>
     </thead>
     <tbody>
         {% for index, data in strategies_results.items() %}
-        <tr class="bg-white border-b">
-            <td class="px-4 py-2">{{ index }}</td>
+        <tr class="bg-white lg:hover:bg-gray-100 flex lg:table-row flex-row lg:flex-row flex-wrap lg:flex-no-wrap mb-10">
+            <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static">{{ index }}</td>
             {% for column in column_names %}
-            <td class="px-4 py-2">{{ data[column] }}</td>
+            <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b block lg:table-cell relative lg:static">{{ data[column] }}</td>
             {% endfor %}
         </tr>
         {% endfor %}
@@ -34,18 +33,147 @@
 <p>No strategies results available.</p>
 {% endif %}
 
-
-
-
 <div class="flex items-center justify-center p-5">
     <div class="w-1/3 bg-gray-300 h-px"></div>
     <span class="px-4 text-gray-500">Overview Status</span>
     <div class="w-1/3 bg-gray-300 h-px"></div>
-  </div>
-
-<div class="log-container bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-    <pre class="log-content">
-    {{ get_overview | safe }}
-    </pre>
 </div>
+
+{% if get_overview %}
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-4 text-center">Market Data</h1>
+    <h2 class="text-xl font-semibold mb-2 text-center">Update Time: {{ get_overview['UpdateTime'] }}</h2>
+    
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Option Chain Data</h2>
+    <table class="border-collapse w-full mb-8">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">Key</th>
+                {% for index in get_overview['OptionChainData'].keys() %}
+                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">{{ index }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for key in get_overview['OptionChainData']['NSE:NIFTY50-INDEX'].keys() %}
+                <tr class="bg-white lg:hover:bg-gray-100">
+                    <td class="p-3 text-gray-800 text-center border border-b">{{ key }}</td>
+                    {% for index, details in get_overview['OptionChainData'].items() %}
+                    {% set value = details[key] %}
+                    {% if value is number %}
+                        {% if value < 0 %}
+                            <td class="p-3 text-gray-800 text-center border border-b">
+                                <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ value }}</span>
+                            </td>
+                        {% else %}
+                            <td class="p-3 text-gray-800 text-center border border-b">
+                                <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ value }}</span>
+                            </td>
+                        {% endif %}
+                    {% else %}
+                        <td class="p-3 text-gray-800 text-center border border-b">{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-4">FII/DII Data</h2>
+    <table class="border-collapse w-full mb-8">
+        <thead>
+            <tr class="bg-gray-200">
+                {% for key in get_overview['FiiDiiData'].keys() %}
+                    <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">{{ key }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-white lg:hover:bg-gray-100">
+                {% for value in get_overview['FiiDiiData'].values() %}
+                    {% if value is number %}
+                        {% if value < 0 %}
+                            <td class="p-3 text-gray-800 text-center border border-b">
+                                <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ value }}</span>
+                            </td>
+                        {% else %}
+                            <td class="p-3 text-gray-800 text-center border border-b">
+                                <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ value }}</span>
+                            </td>
+                        {% endif %}
+                    {% else %}
+                        <td class="p-3 text-gray-800 text-center border border-b">{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    
+
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Advances/Declines Summary</h2>
+    <table class="border-collapse w-full mb-8">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">Index Name</th>
+                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">Advances</th>
+                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">Declines</th>
+                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">Unchanged</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index_key, summary in get_overview['AdvancesDeclineData'].items() %}
+                {% if index_key.endswith('_advance') %}
+                    <tr class="bg-white lg:hover:bg-gray-100">
+                        <td class="p-3 text-gray-800 text-center border border-b">{{ index_key.split('_')[0].replace('%20', ' ') }}</td>
+                        <td class="p-3 text-gray-800 text-center border border-b">
+                            <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ summary['advances'] }}</span>
+                        <td class="p-3 text-gray-800 text-center border border-b">
+                            <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ summary['declines'] }}</span>
+                        </td>
+                        <td class="p-3 text-gray-800 text-center border border-b">
+                            <span class="rounded bg-blue-400 py-1 px-3 text-xs font-bold">{{ summary['unchanged'] }}</span>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-4">Advances Decline Data</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {% for key, details in get_overview['AdvancesDeclineData'].items() %}
+            {% if not key.endswith('_advance') %}
+                <div>
+                    <h3 class="text-xl font-semibold mt-4 mb-2">{{ key.split('_')[0].replace('%20', ' ')  }} </h3>
+                    <table class="border-collapse w-full mb-8">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">Symbol</th>
+                                <th class="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300">Change (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in details %}
+                                <tr class="bg-white lg:hover:bg-gray-100">
+                                    <td class="p-3 text-gray-800 text-center border border-b">{{ entry['symbol'] }}</td>
+                                    <td class="p-3 text-gray-800 text-center border border-b">
+                                        {% if entry['pChange'] < 0 %}
+                                            <span class="rounded bg-red-400 py-1 px-3 text-xs font-bold">{{ entry['pChange'] }}%</span>
+                                        {% else %}
+                                            <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">{{ entry['pChange'] }}%</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<p>No Overview data available.</p>
+{% endif %}
+
 {% endblock %}
