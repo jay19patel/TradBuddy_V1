@@ -89,24 +89,30 @@ def logs():
 
     return render_template('Pages/logs.html', log_content=log_content)
 
-
-
 @app.route('/parameters')
 @login_required
 def parameters():
     try:
         with open('Records/strategies_results.json', 'r') as file:
-            strategies_results = file.read()
-    except (FileNotFoundError, IOError) as e:
+            strategies_results = json.load(file)
+    except (FileNotFoundError, IOError, json.JSONDecodeError) as e:
         print(f"Error reading strategies_results.json: {e}")
         strategies_results = None
+
     try:
         with open('Records/get_overview.json', 'r') as file:
-            get_overview = file.read()
-    except (FileNotFoundError, IOError) as e:
+            get_overview = json.load(file)
+    except (FileNotFoundError, IOError, json.JSONDecodeError) as e:
         print(f"Error reading get_overview.json: {e}")
         get_overview = None
-    return render_template('Pages/parameters.html', strategies_results=strategies_results, get_overview=get_overview)
+
+    if strategies_results:
+        first_index = next(iter(strategies_results.values()))
+        column_names = list(first_index.keys())
+    else:
+        column_names = []
+
+    return render_template('Pages/parameters.html', strategies_results=strategies_results, get_overview=get_overview, column_names=column_names)
 
 
 
