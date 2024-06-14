@@ -9,10 +9,30 @@
   </div>
 
 <div class="log-container bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-    <h1>Log File Contents</h1>
-    <pre class="log-content">
-    {{ strategies_results | safe }}
-    </pre>
+    {% if strategies_results %}
+    <table class="table-auto w-full bg-white rounded-lg shadow-md">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="px-4 py-2">Index Name</th>
+                {% for column in column_names %}
+                <th class="px-4 py-2">{{ column.replace('_', ' ').capitalize() }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, data in strategies_results.items() %}
+            <tr class="bg-white border-b">
+                <td class="px-4 py-2">{{ index }}</td>
+                {% for column in column_names %}
+                <td class="px-4 py-2">{{ data[column] }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No strategies results available.</p>
+    {% endif %}
 </div>
 
 
@@ -24,7 +44,6 @@
   </div>
 
 <div class="log-container bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-    <h1>Log File Contents</h1>
     <pre class="log-content">
     {{ get_overview | safe }}
     </pre>
