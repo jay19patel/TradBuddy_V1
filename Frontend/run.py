@@ -94,14 +94,21 @@ def logs():
 @app.route('/parameters')
 @login_required
 def parameters():
+    try:
+        with open('Records/strategies_results.json', 'r') as file:
+            strategies_results = file.read()
+    except (FileNotFoundError, IOError) as e:
+        print(f"Error reading strategies_results.json: {e}")
+        strategies_results = None
+    try:
+        with open('Records/get_overview.json', 'r') as file:
+            get_overview = file.read()
+    except (FileNotFoundError, IOError) as e:
+        print(f"Error reading get_overview.json: {e}")
+        get_overview = None
+    return render_template('Pages/parameters.html', strategies_results=strategies_results, get_overview=get_overview)
 
-    with open('Records/strategies_results.json', 'r') as file:
-        strategies_results = file.read()
 
-     with open('Records/get_overview.json', 'r') as file:
-        get_overview = file.read()
-
-    return render_template('Pages/parameters.html', strategies_results=strategies_results,get_overview=get_overview)
 
 @app.route('/clear_logs', methods=['POST'])
 @login_required
