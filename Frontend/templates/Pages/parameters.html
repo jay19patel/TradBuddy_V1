@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Parameters{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-center p-5">
+    <div class="w-1/3 bg-gray-300 h-px"></div>
+    <span class="px-4 text-gray-500">Strategy Status</span>
+    <div class="w-1/3 bg-gray-300 h-px"></div>
+  </div>
+
+<div class="log-container bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+    <h1>Log File Contents</h1>
+    <pre class="log-content">
+    {{ strategies_results | safe }}
+    </pre>
+</div>
+
+
+
+<div class="flex items-center justify-center p-5">
+    <div class="w-1/3 bg-gray-300 h-px"></div>
+    <span class="px-4 text-gray-500">Overview Status</span>
+    <div class="w-1/3 bg-gray-300 h-px"></div>
+  </div>
+
+<div class="log-container bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+    <h1>Log File Contents</h1>
+    <pre class="log-content">
+    {{ get_overview | safe }}
+    </pre>
+</div>
+{% endblock %}

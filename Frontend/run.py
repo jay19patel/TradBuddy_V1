@@ -89,6 +89,20 @@ def logs():
 
     return render_template('Pages/logs.html', log_content=log_content)
 
+
+
+@app.route('/parameters')
+@login_required
+def parameters():
+
+    with open('Records/strategies_results.json', 'r') as file:
+        strategies_results = file.read()
+
+     with open('Records/get_overview.json', 'r') as file:
+        get_overview = file.read()
+
+    return render_template('Pages/parameters.html', strategies_results=strategies_results,get_overview=get_overview)
+
 @app.route('/clear_logs', methods=['POST'])
 @login_required
 def clear_logs():
