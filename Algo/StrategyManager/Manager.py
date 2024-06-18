@@ -59,6 +59,5 @@ async def store_strategy_statuses(fyers_obj):
 
 @market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 60)
 def StrategyBuilder(fyers_obj):
-    print("StrategyBuilder------------------------------------")
-    # asyncio.run(store_strategy_statuses(fyers_obj))
+    asyncio.run(store_strategy_statuses(fyers_obj))
 
