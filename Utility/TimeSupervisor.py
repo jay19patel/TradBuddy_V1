@@ -32,20 +32,6 @@ def market_time_decorator(**kwargs):
         return wrapper
     return decorator
 
-@market_time_decorator(Open_close_time="09:14", Close_time="15:15", Interval=60)
-def my_function(param1, param2):
-    print(f"Function executed with parameters: {param1}, {param2}")
-
-# Example usage
-if __name__ == "__main__":
-    my_function("param1_value", "param2_value")
-    
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
-
-
 def Run_at(time_str):
     def decorator(func):
         @functools.wraps(func)
