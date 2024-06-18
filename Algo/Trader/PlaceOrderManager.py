@@ -45,7 +45,6 @@ async def PlaceOrder(account, strategy_name, trad_index, trad_side,trad_price,Fy
     # index_sl,index_tg = 20,40
     # Dynamic karvanu chhe ke jab Nifty rey to SL nallu ne Qunity vadhare | Banknifty rey to SL motu ne quanity osi
     # current_option_sl, current_option_tg = [current_option_price * (100 - base_sl) / 100, current_option_price * (100 + base_tg) / 100]
-    print(quantity, current_option_sl ,current_option_tg)
 
     order_place_status = TradBuddy.order_place(
         account_id = account_id,

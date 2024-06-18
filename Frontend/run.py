@@ -310,7 +310,6 @@ def Notification():
 def AccountTradbook(account):
 
     tradbook = tb_broker.order_book(account)
-    print(tradbook)
     return render_template('Pages/accountTradbook.html',tradbook=tradbook['body'])
 
 

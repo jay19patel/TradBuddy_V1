@@ -90,7 +90,6 @@ class TradBuddyBroker:
 
     def account_update(self, account_id, update_data):
         try:
-            print(update_data,"update_data")
             result = self.account_collection.update_one({"account_id": account_id}, {"$set": update_data})
             if result.modified_count:
                 return {
