@@ -3,6 +3,8 @@ import time
 import asyncio
 import numpy as np
 import pandas as pd
+
+
 async def strategy_1(df, current_price):
     # Dummmy Random Trad for Testing
     await asyncio.sleep(2)
@@ -17,7 +19,7 @@ async def strategy_2(df, current_price):
     df['TradSide'] = np.select([ce_condition, pe_condition], ['CE', 'PE'], default='None')
     
     TradSide_Status = df.iloc[-1]['TradSide']
-    print("Status EMA CANDLE : ",TradSide_Status)
+    # print("Status EMA CANDLE : ",TradSide_Status)
     return TradSide_Status
 
 
@@ -36,7 +38,7 @@ async def strategy_3(df, current_price):
                     )
     df["TradSide"] = np.select([ce_condition, pe_condition], ["CE", "PE"], default="None")
     TradSide_Status = df.iloc[-1]['TradSide']
-    print("Status INSIDE CANDLE : ",TradSide_Status)
+    # print("Status INSIDE CANDLE : ",TradSide_Status)
     return TradSide_Status
 
 
@@ -67,7 +69,7 @@ async def strategy_4(df, current_price):
     pe_condition = (df['TradSide_EMA'] == "PE") | (df["Inside_TradSide"] == "PE")
     df['TradSide'] = np.select([ce_condition, pe_condition], ['CE', 'PE'], default='None')
     TradSide_Status = df.iloc[-1]['TradSide']
-    print("Status INSIDE + EMA CANDLE : ",TradSide_Status)
+    # print("Status INSIDE + EMA CANDLE : ",TradSide_Status)
 
     return TradSide_Status
 
