@@ -57,7 +57,7 @@
         <tbody>
             {% for key in get_overview['OptionChainData']['NSE:NIFTY50-INDEX'].keys() %}
                 <tr class="bg-white lg:hover:bg-gray-100">
-                    <td class="p-3 text-gray-800 text-center border border-b">{{ key }}</td>
+                    <td class="p-3 text-gray-800 text-center border border-b">{{ key.replace('_', ' ').title()}}</td>
                     {% for index, details in get_overview['OptionChainData'].items() %}
                     {% set value = details[key] %}
                     {% if value is number %}

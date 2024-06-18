@@ -20,7 +20,7 @@ dayly_stacks = mongo_connection["DailyStacks"]
 
 
 
-@market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 10)
+@market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 60)
 def get_overview(fyers_obj):
     try:
         option_chain_data = OptionChain(fyers_obj)
@@ -36,7 +36,8 @@ def get_overview(fyers_obj):
         # dayly_stacks.insert_one(dict_data)
         with open(os.path.join(os.getcwd(), "Records", "get_overview.json"), "w") as json_file:
             json.dump(dict_data, json_file, indent=5)
-        logging.warning(f"Updated Microscript Daily Stacks")
+        print(f"Updated Microscript [get_overview]")
+        logging.info(f"Updated Microscript [get_overview]")
     except Exception as e:
         logging.warning(f"Some thing Wrong in Microscript Daily Stacks at {e}")
 

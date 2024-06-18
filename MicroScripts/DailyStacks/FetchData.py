@@ -11,7 +11,9 @@ logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level
 def GetNseData(url):
     headers = {
         'Referer': 'https://www.nseindia.com/',
-        'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Microsoft Edge";v="122"',
+        # 'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Microsoft Edge";v="122"', /ORIGINAL
+        'Sec-Ch-Ua': '"Chromium";v="122", "Not/A)Brand";v="8", "Chromium";v="126", "Microsoft Edge";v="126"',
+    
         'Sec-Ch-Ua-Mobile': '?0',
         'Sec-Ch-Ua-Platform': '"Windows"',
         'Sec-Fetch-Dest': 'empty',
@@ -50,25 +52,25 @@ def OptionChain(fyers_obj):
                 "india_vix_chng_pr": round(response['data']['indiavixData']['ltpchp'], 2),
                 "total_put_oi": round(response["data"]["putOi"], 2),
                 "total_call_oi": round(response["data"]["callOi"], 2),
-                "5_call_oi_change": round(sum(i['oich'] for i in option_chain if i['option_type'] == "CE"), 2),
+                "5_pcr_oi": round(response["data"]["putOi"] / response["data"]["putOi"], 3),
                 "5_put_oi_change": round(sum(i['oich'] for i in option_chain if i['option_type'] == "PE"), 2),
-                "5_call_oi_change_pr": round(sum(i['oichp'] for i in option_chain if i['option_type'] == "CE"), 2),
                 "5_put_oi_change_pr": round(sum(i['oichp'] for i in option_chain if i['option_type'] == "PE"), 2),
-                "5_pcr_oi": round(response["data"]["putOi"] / response["data"]["putOi"], 2),
-                "5_pcr_volume": round(
-                    sum(i['volume'] for i in option_chain if i['option_type'] == "PE") /
-                    sum(i['volume'] for i in option_chain if i['option_type'] == "CE"), 2
-                ) if sum(i['volume'] for i in option_chain if i['option_type'] == "CE") != 0 else 0,
-                "5_pcr_oi_chng_pr": round(
+                "5_call_oi_change": round(sum(i['oich'] for i in option_chain if i['option_type'] == "CE"), 2),
+                "5_call_oi_change_pr": round(sum(i['oichp'] for i in option_chain if i['option_type'] == "CE"), 2),
+                 "5_pcr_oi_chng_pr": round(
                     sum(i['oichp'] for i in option_chain if i['option_type'] == "PE") /
                     sum(i['oichp'] for i in option_chain if i['option_type'] == "CE"), 2
                 ) if sum(i['oichp'] for i in option_chain if i['option_type'] == "CE") != 0 else 0,
-                "5_total_put_ask": round(sum(i['ask'] for i in option_chain if i['option_type'] == "PE"), 2),
-                "5_total_put_bid": round(sum(i['bid'] for i in option_chain if i['option_type'] == "PE"), 2),
-                "5_total_call_ask": round(sum(i['ask'] for i in option_chain if i['option_type'] == "CE"), 2),
-                "5_total_call_bid": round(sum(i['bid'] for i in option_chain if i['option_type'] == "CE"), 2),
                 "5_total_put_volume": round(sum(i['volume'] for i in option_chain if i['option_type'] == "PE"), 2),
-                "5_total_call_volume": round(sum(i['volume'] for i in option_chain if i['option_type'] == "CE"), 2)
+                "5_total_call_volume": round(sum(i['volume'] for i in option_chain if i['option_type'] == "CE"), 2),
+                "5_pcr_volume": round(
+                    sum(i['volume'] for i in option_chain if i['option_type'] == "PE") /
+                    sum(i['volume'] for i in option_chain if i['option_type'] == "CE"), 2
+                ) if sum(i['volume'] for i in option_chain if i['option_type'] == "CE") != 0 else 0,            
+                "5_total_put_ask": round(sum(i['ask'] for i in option_chain if i['option_type'] == "PE"), 2),
+                "5_total_call_ask": round(sum(i['ask'] for i in option_chain if i['option_type'] == "CE"), 2),
+                "5_total_put_bid": round(sum(i['bid'] for i in option_chain if i['option_type'] == "PE"), 2),      
+                "5_total_call_bid": round(sum(i['bid'] for i in option_chain if i['option_type'] == "CE"), 2)
             }
         else:
             logging.warning(f"Failed to retrieve option chain data for {index_name}")
