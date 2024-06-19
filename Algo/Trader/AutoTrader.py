@@ -32,7 +32,7 @@ async def process_order_place(account,Fyers,TradBuddy):
                 for symbol in account["strategy"][strategy_key]:
                     status = strategies_results.get(symbol, {}).get(strategy_key,"None")
                     price = strategies_results.get(symbol, {}).get("price")
-                    is_already = TradBuddy.orders_list({"trad_index": symbol, "trad_side": status, "trad_status": "Open"})
+                    is_already = TradBuddy.orders_list({"trad_index": symbol, "trad_side": status, "trad_status": "Open","account_id":account["account_id"]})
                     if status != "None" and len(is_already) <= 0 :
                         print(f"+----------------[{account['account_id']}] Buy[{symbol}] [{status}] [{strategy_key}]------------------+")
                         tasks.append(PlaceOrder(account, strategy_key, symbol, status,price,Fyers,TradBuddy))
