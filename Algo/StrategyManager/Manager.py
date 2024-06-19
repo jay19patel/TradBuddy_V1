@@ -21,6 +21,7 @@ async def find_entries(index_data, fyers_obj, TimeFrame):
         strategy_4_task = strategy_4(data, index_data[1])
         strategy_1_status, strategy_2_status,strategy_3_status,strategy_4_status = await asyncio.gather(strategy_1_task, strategy_2_task,strategy_3_task,strategy_4_task)
         
+        logging.info(f"[{index_data[0]}] ---- strategy_1_status - {strategy_1_status} || strategy_2_status- {strategy_2_status} || strategy_3_status - {strategy_3_status} || strategy_4_status -{strategy_4_status}")
         return index_data[0], {
             "strategy_1_status": strategy_1_status,
             "strategy_2_status": strategy_2_status,
