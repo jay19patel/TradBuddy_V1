@@ -29,6 +29,10 @@ def market_time_decorator(**kwargs):
                 schedule.every(kwargs.get("Interval", 60)).seconds.do(
                     lambda: time_set_for_next_day(func, *args, **kwargsDec) if datetime.now().time() > close_time else func(*args, **kwargsDec)
                 )
+                jobs = schedule.jobs
+                for job in jobs:
+                    print(f"Function: {job.job_func.__name__} | Schedule: {job.interval} {job.unit}| Next Run: {job.next_run}")
+                    print("-" * 20)
             else:
                 time_set_for_next_day(func, *args, **kwargsDec)
         return wrapper
