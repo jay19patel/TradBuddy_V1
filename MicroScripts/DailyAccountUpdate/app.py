@@ -28,7 +28,7 @@ def ajj_ka_status(tb_obj):
             DailyCollection.update_one({"Date": today_str,"account_id":account['account_id']},{"$set": {"Info": data,"Capital":float(capital),"account_id":account['account_id']}}, upsert=True)
             logging.info(f"Todays Status Update :{today_str} {capital}")
             print(f"Todays Status Update :{today_str} - [{capital}] for Account : {account['account_id']}")
-    except as e:
+    except Exception as e:
         logging.info(f"Something Wrong in [ajj_ka_status] : {e}")
         print(f"Something Wrong in [ajj_ka_status] : {e}")
 def trade_margin_manager(tb_obj):
@@ -48,7 +48,7 @@ def trade_margin_manager(tb_obj):
                                                                         })
         logging.info("Account Setting Updated for the better Performance")
         print("Account Setting Updated for the better Performance")
-    except as e:
+    except Exception as e:
         logging.info(f"Something Wrong in [trade_margin_manager] : {e}")
         print(f"Something Wrong in [trade_margin_manager] : {e}")
 
