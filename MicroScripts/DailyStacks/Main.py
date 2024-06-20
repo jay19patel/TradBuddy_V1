@@ -41,7 +41,7 @@ def get_overview(fyers_obj):
     except Exception as e:
         logging.warning(f"Some thing Wrong in Microscript Daily Stacks at {e}")
 
-    # return dict_data
+
 
 
 

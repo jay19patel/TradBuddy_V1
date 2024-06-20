@@ -40,23 +40,19 @@ async def store_strategy_statuses(fyers_obj):
     Symbol = ["NSE:NIFTY50-INDEX", "NSE:NIFTYBANK-INDEX"]
     TimeFrame = "15"
     results = {}
-
-    index_data = zip(Symbol, fyers_obj.get_current_ltp(",".join(Symbol)).values())
-    gathered_results = await asyncio.gather(*(find_entries(data, fyers_obj, TimeFrame) for data in index_data))
-    
-    for result in gathered_results:
-        if result:
-            results[result[0]] = result[1]
-
-            
-    output_file_path = os.path.join(os.getcwd(), "Records", "strategies_results.json")
     try:
+        index_data = zip(Symbol, fyers_obj.get_current_ltp(",".join(Symbol)).values())
+        gathered_results = await asyncio.gather(*(find_entries(data, fyers_obj, TimeFrame) for data in index_data))
+        for result in gathered_results:
+            if result:
+                results[result[0]] = result[1]    
+        output_file_path = os.path.join(os.getcwd(), "Records", "strategies_results.json")
         with open(output_file_path, "w") as f:
             json.dump(results, f)
         logging.info("Strategy Builder Updated successful")
     except Exception as e:
-        error_msg = f"Error occurred while writing to strategies_results.json: {e}"
-        logging.err(error_msg)
+        error_msg = f"Error occurred in store_strategy_statuses: {e}"
+        logging.error(error_msg)
 
 @market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 60)
 def StrategyBuilder(fyers_obj):

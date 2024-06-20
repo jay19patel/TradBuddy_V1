@@ -267,17 +267,17 @@ def AccountDashbord(account):
 @app.route('/update_trad/<order_id>', methods=['GET', 'POST'])
 @login_required
 def UpdateTrad(order_id):
-    orderData = None
+    orderData = tb_broker.orders_get(query={"order_id": str(order_id)})
 
     if request.method == 'POST':
-        stoploss_price = request.form['stoploss_price']
-        target_price = request.form['target_price']
+        stoploss_price = request.form['stoploss_price'] or orderData['stoploss_price']
+        target_price = request.form['target_price'] or orderData['target_price']
 
         update_status = tb_broker.order_update(order_id=order_id, query={"stoploss_price": stoploss_price, "target_price": target_price})
         flash(update_status)
         return redirect(url_for('UpdateTrad', order_id=order_id))  # Redirect to avoid form resubmission
 
-    orderData = tb_broker.orders_get(query={"order_id": str(order_id)})
+    
     return render_template('Pages/UpdateTrad.html', orderData=orderData)
 
 @app.route('/account_overview/<account>')

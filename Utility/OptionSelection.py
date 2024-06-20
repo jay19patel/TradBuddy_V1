@@ -64,7 +64,7 @@ def get_option_for(trad_index, trad_side, price,expiry = 0):
 
     final_data = option_df[
     (option_df["STRIKE PRICE"] == tred_sp)&
-    (option_df["EXDATETIME"] >= datetime.now().date()) &
+    (option_df["EXDATETIME"] > datetime.now().date()) &
     (option_df["SIDE"] == trad_side) &
     (option_df['INDEX'] == trad_index)
     ]

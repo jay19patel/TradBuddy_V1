@@ -15,6 +15,7 @@ def time_set_for_next_day(func, *args, **kwargs):
     schedule.clear()
     schedule.every().day.at("09:15").do(func, *args, **kwargs)
     print("Market schedule set for the next day")
+    logging.info("Market schedule set for the next day")
 
 def market_time_decorator(**kwargs):
     def decorator(func):
@@ -26,13 +27,14 @@ def market_time_decorator(**kwargs):
 
             if open_time <= current_time <= close_time:
                 print(f"Algorithm is Online [{func.__name__}]")
+                logging.info(f"Algorithm is Online [{func.__name__}]")
                 schedule.every(kwargs.get("Interval", 60)).seconds.do(
                     lambda: time_set_for_next_day(func, *args, **kwargsDec) if datetime.now().time() > close_time else func(*args, **kwargsDec)
                 )
                 jobs = schedule.jobs
                 for job in jobs:
                     print(f"Function: {job.job_func.__name__} | Schedule: {job.interval} {job.unit}| Next Run: {job.next_run}")
-                    print("-" * 20)
+                    logging.info(f"Function: {job.job_func.__name__} | Schedule: {job.interval} {job.unit}| Next Run: {job.next_run}")
             else:
                 time_set_for_next_day(func, *args, **kwargsDec)
         return wrapper

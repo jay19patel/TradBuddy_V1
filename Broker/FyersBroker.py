@@ -127,17 +127,20 @@ class Fyers:
             logging.warning("Alredy Authenticated")
 
     def get_current_ltp(self, option_symbol):
-            if self.authenticate:
-                data = {"symbols": option_symbol}
-                data = self.fyers_instance.quotes(data=data)
-                if data['code'] == 200:
-                    return {item['v'].get('short_name', 'Unknown'): item['v'].get('lp', 'Unknown') for item in data['d']}
-                else:
-                    logging.warning("DATA NOT GET FROM FYERS")
-                    return False
+        try:
+            data = {"symbols": option_symbol}
+            data = self.fyers_instance.quotes(data=data)
+            if data['code'] == 200:
+                return {item['v'].get('short_name', 'Unknown'): item['v'].get('lp', 'Unknown') for item in data['d']}
             else:
-                logging.error("ERROR: Authentication Failed")
-                return "[ERROR: Authentication Failed]"
+                logging.warning("DATA NOT GET FROM FYERS")
+                return False
+        except Exception as e:
+            logging.error("ERROR: Authentication Failed{e}")
+            return None
+                
+
+    
     def MarketStatus(self):
         market_status = self.fyers_instance.market_status()
         return market_status["marketStatus"][0]["status"]
