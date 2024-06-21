@@ -54,7 +54,7 @@ async def store_strategy_statuses(fyers_obj):
         error_msg = f"Error occurred in store_strategy_statuses: {e}"
         logging.error(error_msg)
 
-@market_time_decorator(Open_time = "9:15",Close_time = "15:15",Interval = 60)
+@market_time_decorator(Open_time = "9:15",Close_time = "15:30",Interval = 60)
 def StrategyBuilder(fyers_obj):
     print("-----------[StrategyBuilder]------------")
     asyncio.run(store_strategy_statuses(fyers_obj))

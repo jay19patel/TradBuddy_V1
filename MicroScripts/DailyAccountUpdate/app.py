@@ -52,7 +52,7 @@ def trade_margin_manager(tb_obj):
         logging.info(f"Something Wrong in [trade_margin_manager] : {e}")
         print(f"Something Wrong in [trade_margin_manager] : {e}")
 
-@Run_at("15:31")
+@Run_at("15:29")
 def Account_status_update(tb_obj):
     trade_margin_manager(tb_obj)
     ajj_ka_status(tb_obj)

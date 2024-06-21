@@ -3,7 +3,6 @@ from datetime import datetime,date
 import time
 import asyncio
 import functools
-
 import logging
 import os
 logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -11,7 +10,6 @@ logging.basicConfig(filename=f"{os.getcwd()}/Records/StrategyManager.log", level
 
 
 def time_set_for_next_day(func, *args, **kwargs):
-
     schedule.clear()
     schedule.every().day.at("09:15").do(func, *args, **kwargs)
     print("Market schedule set for the next day")
@@ -22,8 +20,8 @@ def market_time_decorator(**kwargs):
         @functools.wraps(func)
         def wrapper(*args, **kwargsDec):
             current_time = datetime.now().time()
-            open_time = datetime.strptime(kwargs.get("Open_close_time", "9:14"), "%H:%M").time()
-            close_time = datetime.strptime(kwargs.get("Close_time", "15:15"), "%H:%M").time()
+            open_time = datetime.strptime(kwargs.get("Open_close_time", "9:15"), "%H:%M").time()
+            close_time = datetime.strptime(kwargs.get("Close_time", "15:30"), "%H:%M").time()
 
             if open_time <= current_time <= close_time:
                 print(f"Algorithm is Online [{func.__name__}]")
